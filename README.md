@@ -21,6 +21,8 @@ If your game changes **love.update**, **love.draw**, **love.keypressed**, or any
 
 Press **`** to show/hide vudu.
 
+![alt text](https://i.imgur.com/XUrE6SP.png "vudu in action")
+
 On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.
 
 On the bottom left of the screen is the **Console**, it allows you to enter lua code to be interpreted and run.  The output of this code (or any error in its compilation) is shown in the console.  The output of print() is also shown in the console.
