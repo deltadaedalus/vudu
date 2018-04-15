@@ -22,7 +22,7 @@ local vd = {
   },
   font = love.graphics.newFont(_vdpath .. "Inconsolata-Regular.ttf", 14),
   windows = {},
-  timeScale = 1,  --The speed at which the game plays
+  timeScale = 0,  --The log2 of the speed at which the game plays
   paused = false, --is the game paused
   pauseType = "Play",
   hidden = false, --is the vudu ui hidden
@@ -39,7 +39,6 @@ function vd.initialize(settings)
   settings = settings or vd.defaultSettings
   vd.hook()
   for i, win in ipairs(vd.windows) do win.load() end
-  print(settings.startHidden)
   vd.hidden = settings.startHidden
 end
 
@@ -59,7 +58,7 @@ function vd.hook()
   
   love.update = function(dt)
     if not (vd.pauseType == "Stop") then
-      _update(dt * (vd.pauseType == "Zero" and 0 or vd.timeScale))
+      _update((vd.pauseType == "Zero" and 0 or dt * 2^vd.timeScale))
     end
     vd.update(dt)
   end

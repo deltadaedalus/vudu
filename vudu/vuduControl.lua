@@ -11,24 +11,24 @@ vd.control.x = 502
 vd.control.y = 450
 
 function vd.control:load()
-  local timeSlider = vdui.widget.slider.new(10, 22, 276, 0, 8, 
+  vd.control.timeSlider = vdui.widget.slider.new(10, 22, 276, 0, 8, 
     {targetRef = "_vudu.timeScale",
-    min = 0,
-    max = 2,
-    targetValue = 1,
-    residual = 0.01 })
-  vd.control.ui:addWidget(timeSlider)
+    min = -3,
+    max = 3,
+    targetValue = 0,
+    residual = 0.002 })
+  vd.control.ui:addWidget(vd.control.timeSlider)
 
 
-  local playButton = vdui.widget.new(10, 32, 48, 48, 12,
+  local playButton = vdui.widget.new(74, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Play", 1) end,
     image = love.graphics.newImage(vd.path .. "Images/Play.png")})
 
-  local zeroButton = vdui.widget.new(60, 32, 48, 48, 12,
+  local zeroButton = vdui.widget.new(124, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Zero", 2) end,
     image = love.graphics.newImage(vd.path .. "Images/Pause.png")})
   
-  local stopButton = vdui.widget.new(110, 32, 48, 48, 12,
+  local stopButton = vdui.widget.new(174, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Stop", 3) end,
     image = love.graphics.newImage(vd.path .. "Images/Stop.png")})
 
@@ -38,6 +38,10 @@ function vd.control:load()
   vd.control.ui:addWidget(stopButton)
 
   vd.control.pauseButtons = {playButton, zeroButton, stopButton}
+
+  local resetDTbutton = vdui.widget.new(142, 32, 12, 12, 6,
+    {onRelease = function() _vudu.control.timeSlider:gotoValue(0) end})
+  vd.control.ui:addWidget(resetDTbutton)
 end
   
 function vd.control.setPauseType(pauseType, activeIndex)

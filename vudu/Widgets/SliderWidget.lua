@@ -44,7 +44,7 @@ end
 
 function vdw.slider:update(dt)
     local wasMoving = self.moving
-    self.moving = (self.currentValue-self.targetValue) / (self.max-self.min) < .001 or self.ui.heldWidget == self
+    self.moving = math.abs((self.currentValue-self.targetValue) / (self.max-self.min)) > .001 or self.ui.heldWidget == self
     if wasMoving and not self.moving then
         self.currentValue = self.targetValue
     end
@@ -62,7 +62,7 @@ function vdw.slider:draw()
     vdUtil.roundLine(self.r*2, self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y)
     local sx, sy = self.endPoint.x - self.startPoint.x, self.endPoint.y - self.startPoint.y
     local along = (self.currentValue - self.min) / (self.max-self.min)
-    love.graphics.setColor(self.idleColor)
+    love.graphics.setColor(self:getColor())
     love.graphics.circle("fill", self.startPoint.x + sx*along, self.startPoint.y + sy*along, self.r)
 end
 
@@ -72,4 +72,9 @@ function vdw.slider:checkContains(x, y)
     local px, py = self.startPoint.x + sx*along, self.startPoint.y + sy*along
 
     return vdUtil.sqDist(x, y, px, py) < self.r * self.r
+end
+
+function vdw.slider:gotoValue(value)
+    self.targetValue = value
+    self.moving = true
 end

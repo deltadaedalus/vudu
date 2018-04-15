@@ -120,7 +120,7 @@ local vdwg = {
   pressColor_pre11 = {192, 192, 224},
   idleColor = {3/4, 3/4, 3/4},
   hoverColor = {25/32, 25/32, 25/32},
-  pressColor = {3/4, 3/4, 7/8},
+  pressColor = {13/16, 3/4, 15/16},
 }
 vdwg.__index = vdwg
 
