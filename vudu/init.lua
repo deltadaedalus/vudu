@@ -1,12 +1,13 @@
-local vd = require "vudu"
+local path = ... .. '.' 
+local vd = (require path .. "vudu")
 
-require "Widgets/SliderWidget"
-require "Widgets/TextWidget"
-require "Widgets/TextFieldWidget"
-require "Widgets/vuduFieldWidget"
+require (path .. "Widgets/SliderWidget")
+require (path .. "Widgets/TextWidget")
+require (path .. "Widgets/TextFieldWidget")
+require (path .. "Widgets/vuduFieldWidget")
 
-table.insert(vd.windows, require("vuduConsole"))
-table.insert(vd.windows, require("vuduBrowser"))
-table.insert(vd.windows, require("vuduControl"))
+table.insert(vd.windows, require(path .. "vuduConsole"))
+table.insert(vd.windows, require(path .. "vuduBrowser"))
+table.insert(vd.windows, require(path .. "vuduControl"))
 
 return vd
