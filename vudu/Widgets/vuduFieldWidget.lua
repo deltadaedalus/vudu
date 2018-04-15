@@ -18,8 +18,8 @@ end
 function vdw.vuduField:update(dt)
   if self.ui.textTarget ~= self then
     self.text = tostring(vd.getByName(self.refstr))
-    self.w = vd.font:getWrap(tostring(self.text), 500) + 12
   end
+  self.w = vd.font:getWrap(tostring(self.text), 500) + 12
 end
 
 function vdw.textField:onEntered()

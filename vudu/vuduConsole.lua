@@ -74,7 +74,7 @@ end
 local _bpl = 12
 function vd.console._drawBubbleWidget(self)
   love.graphics.setColor(self.idleColor)
-  vdutil.roundRect("fill", self.x, self.y, self.w, self.h, self.r)
+  love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, self.r)
   if (self.isResponse) then
     local xc, yc = self.x+self.r, self.y
     love.graphics.polygon("fill", xc, yc, xc+_bpl, yc, xc, yc-_bpl)

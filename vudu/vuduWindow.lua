@@ -61,10 +61,10 @@ function vdwin:gotFocus() end
 function vdwin:lostFocus() end
 
 function vdwin:startDraw()
-  love.graphics.stencil(function() vdUtil.roundRect('fill', self.x, self.y, self.w, self.h, 6) end, "replace", 1, false)
+  love.graphics.stencil(function() love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, 6) end, "replace", 1, false)
   love.graphics.setStencilTest('equal', 1)
   love.graphics.setColor(self.windowColor)
-  vdUtil.roundRect('fill', self.x, self.y, self.w, self.h, 6)
+  love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, 6)
   love.graphics.push()
   love.graphics.translate(self.x, self.y)
 end

@@ -1,6 +1,6 @@
 local vdUtil = {}
 
-function vdUtil.roundRect(mode, x, y, w, h, r)
+--[[function vdUtil.roundRect(mode, x, y, w, h, r)
   if mode == 'fill' then
     love.graphics.rectangle("fill", x+r, y, w-r-r, h)
     love.graphics.rectangle("fill", x, y+r, r, h-r-r)
@@ -14,7 +14,7 @@ function vdUtil.roundRect(mode, x, y, w, h, r)
   else
     error('Invalid draw mode: ' + mode)
   end
-end
+end]]
 
 function vdUtil.roundLine(w, x1, y1, x2, y2)
   love.graphics.setLineWidth(w)
@@ -50,7 +50,7 @@ end
 
 function vdUtil.lerpColor(t, c1, c2)
   local s = 1-t
-  return {s * c1[1] + t * c2[1], s * c1[2] + t * c2[2], s * c1[3] + t * c2[3], 1}
+  return {s * c1[1] + t * c2[1], s * c1[2] + t * c2[2], s * c1[3] + t * c2[3], s * (c1[4] or 1) + t * (c2[4] or 1)}
 end
 
 function vdUtil.moveTowards(current, target, maxDelta)

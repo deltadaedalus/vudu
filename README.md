@@ -2,8 +2,6 @@
 ## visual unified debug utility for LÖVE2D
 
 ---
-## Introduction
-
 vudu is a simple to use in-game debugging system for the LÖVE2D game engine.
 
 **vudu is currently in version 0.1.0, i.e. it has only just been released publicly.  Some amount of bugginess, unfriendliness, or instability is to be expected.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!**

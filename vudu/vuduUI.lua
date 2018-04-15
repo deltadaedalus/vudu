@@ -178,7 +178,7 @@ end
 function vdwg:draw()
   love.graphics.setColor(self:getColor())
   if (self.image) then love.graphics.draw(self.image, self.x, self.y)
-  else vdUtil.roundRect("fill", self.x, self.y, self.w, self.h, self.r)
+  else love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, self.r)
   end
 end
 
@@ -264,10 +264,10 @@ function vdwg.frame:update(dt)
 end
 
 function vdwg.frame:draw()
-  love.graphics.stencil(function() vdUtil.roundRect('fill', self.x, self.y, self.w, self.h, self.r) end, "replace", 1, false)
+  love.graphics.stencil(function() love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r) end, "replace", 1, false)
   love.graphics.setStencilTest('equal', 1)
   love.graphics.setColor(self.idleColor)
-  vdUtil.roundRect('fill', self.x, self.y, self.w, self.h, self.r)
+  love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r)
   
   love.graphics.push()
   love.graphics.translate(self.x + self.ox, self.y + self.oy)

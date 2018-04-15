@@ -1,5 +1,6 @@
 local vd = require(_vdpath .. "vudu")
 local vdui = require(_vdpath .. "vuduUI")
+local vdUtil = require(_vdpath .. "vuduUtil")
 local vdw = vdui.widget
 
 require(_vdpath .."Widgets/TextWidget")
@@ -24,6 +25,8 @@ function vdw.textField:draw()
   if self.ui.textTarget == self then
     local cx = vd.font:getWrap(string.sub(self.text, 0, self.cursor), 1000)
     love.graphics.setLineWidth(2)
+    local textTransparent = {self.textColor[1], self.textColor[2], self.textColor[3], 0}
+    love.graphics.setColor(vdUtil.lerpColor(math.cos(vd.timer*2)^4, self.textColor, textTransparent))
     love.graphics.line(self.x+self.r+cx, self.y+1, self.x+self.r+cx, self.y+15)
   end
 end
