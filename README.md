@@ -1,5 +1,5 @@
 # vudu
-## visual unified debug library for LÖVE2D
+## visual unified debug utility for LÖVE2D
 
 ---
 ## Introduction
