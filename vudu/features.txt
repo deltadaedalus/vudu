@@ -1,3 +1,0 @@
-Future
-    Warnings For Potential Errors:
-        new global variable created after love.load
