@@ -1,5 +1,5 @@
-local vdUtil = require "vuduUtil"
-local vdui = require "vuduUI"
+local vdUtil = require(_vdpath .. "vuduUtil")
+local vdui = require(_vdpath .. "vuduUI")
 
 local vdwin = {
   windowColor_pre11 = {250, 250, 250},

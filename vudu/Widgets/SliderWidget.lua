@@ -1,7 +1,7 @@
-local vd = require "vudu"
-local vdui = require "vuduUI"
+local vd = require(_vdpath .. "vudu")
+local vdui = require(_vdpath .. "vuduUI")
 local vdw = vdui.widget
-local vdUtil = require "vuduUtil"
+local vdUtil = require(_vdpath .. "vuduUtil")
 
 vdw.slider = setmetatable({
     slideColor_pre11 = {128, 128, 128},

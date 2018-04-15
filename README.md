@@ -1,6 +1,5 @@
 # vudu
-## visual unified debug library
-## for LÖVE2D
+## visual unified debug library for LÖVE2D
 
 ---
 ## Introduction
@@ -21,6 +20,8 @@ vudu works by hooking itself into your game, to use it, simply call **vudu.initi
 If your game changes **love.update**, **love.draw**, **love.keypressed**, or any other love callback or lua builtin at runtime, vudu may need to be notified of this by calling **vudu.hook()**
 
 ### Use
+
+Press **`** to show/hide vudu.
 
 On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.
 

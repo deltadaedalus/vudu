@@ -1,5 +1,5 @@
-local vdUtil = require "vuduUtil"
-local vd = require "vudu"
+local vdUtil = require(_vdpath .. "vuduUtil")
+local vd = require(_vdpath .. "vudu")
 
 local vdui = {
   releaseFade = 0.5,

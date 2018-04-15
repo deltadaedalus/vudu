@@ -1,7 +1,7 @@
-local vd = require "vudu"
-local vdwin = require "vuduWindow"
-local vdui = require "vuduUI"
-local vdutil = require "vuduUtil"
+local vd = require(_vdpath .. "vudu")
+local vdwin = require(_vdpath .. "vuduWindow")
+local vdui = require(_vdpath .. "vuduUI")
+local vdutil = require(_vdpath .. "vuduUtil")
 
 vd.console = {
   text = '',

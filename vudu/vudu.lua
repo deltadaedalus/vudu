@@ -20,13 +20,14 @@ local vd = {
     label = {3/16, 3/16, 3/16},
     index = {3/4, 3/4, 3/4},
   },
-  font = love.graphics.newFont("Inconsolata-Regular.ttf", 14),
+  font = love.graphics.newFont(_vdpath .. "Inconsolata-Regular.ttf", 14),
   windows = {},
   timeScale = 1,  --The speed at which the game plays
   paused = false, --is the game paused
   pauseType = "Play",
   hidden = false, --is the vudu ui hidden
-  timer = 0       --The total time passed accroding to vudu (i.e. real time)
+  timer = 0,      --The total time passed accroding to vudu (i.e. real time)
+  path = _vdpath,
 }
 
 vd.defaultSettings = {

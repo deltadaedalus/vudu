@@ -1,6 +1,6 @@
-local vd = require "vudu"
-local vdwin = require "vuduWindow"
-local vdui = require "vuduUI"
+local vd = require(_vdpath .. "vudu")
+local vdwin = require(_vdpath .. "vuduWindow")
+local vdui = require(_vdpath .. "vuduUI")
 
 vd.control = {
   pauseButtons = {}
@@ -22,15 +22,15 @@ function vd.control:load()
 
   local playButton = vdui.widget.new(10, 32, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Play", 1) end,
-    image = love.graphics.newImage("Images/Play.png")})
+    image = love.graphics.newImage(vd.path .. "Images/Play.png")})
 
   local zeroButton = vdui.widget.new(60, 32, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Zero", 2) end,
-    image = love.graphics.newImage("Images/Pause.png")})
+    image = love.graphics.newImage(vd.path .. "Images/Pause.png")})
   
   local stopButton = vdui.widget.new(110, 32, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Stop", 3) end,
-    image = love.graphics.newImage("Images/Stop.png")})
+    image = love.graphics.newImage(vd.path .. "Images/Stop.png")})
 
   vd.control.ui:addWidget(playButton)
   playButton:changeColor(playButton.pressColor, 0)

@@ -1,13 +1,13 @@
-local vd = require "vudu"
-local vdwin = require "vuduWindow"
-local vdui = require "vuduUI"
+local vd = require(_vdpath .. "vudu")
+local vdwin = require(_vdpath .. "vuduWindow")
+local vdui = require(_vdpath .. "vuduUI")
 
 vd.browser = {
   ySpace = 16,
   xSpace = 16,
   
   contextString = "",
-  ignore = love.filesystem.load("vdignore.lua")(),
+  ignore = love.filesystem.load(vd.path .."vdignore.lua")(),
   expand = {},
   bakedContext = {},
   hoverIndex = 1,
