@@ -52,5 +52,7 @@ end
 **Nothing described below is part of the official API**, but the functionality is intended to be accessible via an official API at some point.  For now, as vudu is in early alpha, here are some internal things you might find useful to tap into:
 
 `vudu.control.SetPauseType(pauseType)` : pauseType is a string, and can be "Play", "Zero" (For 0dt updates), or "Stop" (For no updates)
+
 `vudu.timeScale` : a number representing the log2 of the factor by which vudu multiplies dt. 0 is 1x, 2 is 4x, -2 is 0.25x, etc.  Currently, the slider on the control window goes from -3 to 3 (0.125x to 8x).
+
 `vudu.browser.ignore` : a table with string indexes and bool values, which determines which variables to hide in the browser.  As an example, say you want to hide the love.graphics module in the browser, you would do `vudu.browser.ignore["love.graphics"] = true`
