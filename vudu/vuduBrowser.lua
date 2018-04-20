@@ -2,7 +2,7 @@ local vd = require(_vdpath .. "vudu")
 local vdwin = require(_vdpath .. "vuduWindow")
 local vdui = require(_vdpath .. "vuduUI")
 
-vd.browser = {
+vd.browser = vdwin.new({
   ySpace = 16,
   xSpace = 16,
   
@@ -20,31 +20,44 @@ vd.browser = {
   widgetCache = {},
 
   expColor_pre11 = {128, 128, 128},
-  expColor = {1/2, 1/2, 1/2}
-}
-
-vdwin.setup(vd.browser, 246, 446)
-vd.browser.x = 2
-vd.browser.y = 2
+  expColor = {1/2, 1/2, 1/2},
+  fieldColor = {7/8, 7/8, 7/8}
+}, {
+  x = 2, 
+  y = 2, 
+  w = 246, 
+  h = 446, 
+  hasFrame = true
+})
 
 function vd.browser:load()
-  vd.browser.browserFrame = vdui.widget.frame.new(2, 20, 242, 424, 6)
-  vd.browser.ui:addWidget(vd.browser.browserFrame)
+  vd.browser:addTopWidget()
   
+  vd.browser.browserFrame = vdui.widget.frame.new(2, 20, 228, 424, 6, {
+    onResize = function(self) self:edgeL(2); self:edgeT(20); self:insetB(2); self:insetR(16) end,
+    scrollable = true
+  })
+  
+  vd.browser.browserSlider = vdui.widget.slider.new(238, 26, 0, 412, 6, {
+    targetRef = "_vudu.browser.browserFrame.toy",
+    min = 0,
+    max = -20,
+    targetValue = 0,
+    residual = 0.001,
+    onResize = function(self) self:setX(-8); self:insetB(8) self:updatePosition() end,
+  })
+  
+  vd.browser.frame:addWidget(vd.browser.browserSlider)
+  vd.browser.frame:addWidget(vd.browser.browserFrame)
+
   vd.browser.bakedContext = vd.browser.bakeTable(_G)
   vd.browser.bakeUI()
 end
 
 
 function vd.browser:update(dt)
-  self.ui:update(dt)
   vd.browser.bakedContext = vd.browser.bakeTable(_G)
   vd.browser.bakeUI()
-end
-
-
-function vd.browser:draw()
-  vd.browser.ui:draw()
 end
 
 
@@ -80,6 +93,7 @@ function vd.browser.bakeUI()
     vd.browser.addBrowserWidget(v, vd.browser.ySpace + 1 + v.depth * vd.browser.xSpace, y)
     y = y + vd.browser.ySpace
   end
+  vd.browser.browserSlider.max = math.min(0, vd.browser.browserFrame.h - y - vd.browser.ySpace)
 end
 
 
@@ -107,7 +121,7 @@ function vd.browser.addBrowserWidget(widgetDat, x, y)
       
       --frame:addWidget(vdui.widget.text.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, tostring(value), {textColor = vd.colors[typ]}))
     elseif typ == 'string' or typ == 'number' then
-      local valueWidget = vdui.widget.vuduField.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, widgetDat.ref, {textColor = vd.colors[typ]})
+      local valueWidget = vdui.widget.vuduField.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, widgetDat.ref, {textColor = vd.colors[typ], idleColor = vd.browser.fieldColor})
       table.insert(cache, valueWidget)
     else
       local valueText = vdui.widget.text.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, tostring(value), {textColor = vd.colors[typ]})

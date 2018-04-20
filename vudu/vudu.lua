@@ -1,4 +1,5 @@
 local vd = {
+  _version = '0.1.1',
   colors_pre11 = {
     number = {80,112,255},
     string = {128, 32, 16},
@@ -30,6 +31,9 @@ local vd = {
   path = _vdpath,
 }
 
+vd.vuduUI = require(_vdpath .. "vuduUI")
+vd.ui = vd.vuduUI.new()
+
 vd.defaultSettings = {
   startHidden = true
 }
@@ -37,9 +41,11 @@ vd.defaultSettings = {
 --To be called from love.load, does what it says on the tin
 function vd.initialize(settings)
   settings = settings or vd.defaultSettings
-  vd.hook()
-  for i, win in ipairs(vd.windows) do win.load() end
   vd.hidden = settings.startHidden
+
+  vd.hook()
+  for i, win in ipairs(vd.windows) do win:load() end
+  vd.resize(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
 --injects vudu into the game
@@ -53,7 +59,9 @@ function vd.hook()
   local _keyreleased = love.keyreleased or dont
   local _wheelmoved = love.wheelmoved or dont
   local _textinput = love.textinput or dont
+  local _resize = love.resize or dont
   local _print = print
+  local _setMode = love.window.setMode
   
   
   love.update = function(dt)
@@ -69,56 +77,68 @@ function vd.hook()
   love.keyreleased = function(...) _keyreleased(...); vd.keyreleased(...) end
   love.wheelmoved = function(...) _wheelmoved(...); vd.wheelmoved(...) end
   love.textinput = function(...) _textinput(...); vd.textinput(...) end
+  love.resize = function(...) _resize(...); vd.resize(...) end
   print = function(...) if not vd.print(...) then _print(...) end end
+  love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
 end
 
 
 function vd.update(dt)
   vd.timer = vd.timer + dt
+  vd.ui:update(dt)
   for i, win in ipairs(vd.windows) do win:update(dt) end
 end
 
 function vd.draw()
-  if vd.hidden then return end
   love.graphics.origin()
-  for i, win in ipairs(vd.windows) do 
-    win:startDraw()
+  if not vd.hidden then vd.ui:draw() end
+  for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then
     win:draw()
-    win:endDraw()
-  end
+  end end
 end
 
 function vd.mousepressed(x, y, button, isTouch)
-  if vd.hidden then return end
-  for i, win in ipairs(vd.windows) do win:mousepressed(x - win.x, y - win.y, button, isTouch) end
+  if not vd.hidden then vd.ui:mousepressed(x, y, button, isTouch) end
+  for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then win:mousepressed(x - win.x, y - win.y, button, isTouch) end end
 end
 
 function vd.mousereleased(x, y, button, isTouch)
-  if vd.hidden then return end
-  for i, win in ipairs(vd.windows) do win:mousereleased(x - win.x, y - win.y, button, isTouch) end
+  if not vd.hidden then vd.ui:mousereleased(x, y, button, isTouch) end
+  for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then win:mousereleased(x - win.x, y - win.y, button, isTouch) end end
 end
 
 function vd.keypressed(key, scancode, isrepeat)
   if (key == '`') then
     vd.hidden = not vd.hidden
   end
-  if vd.hidden then return end
-  for i, win in ipairs(vd.windows) do win:keypressed(key, scancode, isrepeat) end
+  if not vd.hidden then vd.ui:keypressed(key, scancode, isrepeat) end
+  for i, win in ipairs(vd.windows) do  if win.runHidden or not vd.hidden then win:keypressed(key, scancode, isrepeat) end end
 end
 
 function vd.keyreleased(key, scancode, isrepeat)
-  if vd.hidden then return end
-  for i, win in ipairs(vd.windows) do win:keyreleased(key, scancode, isrepeat) end
+  if not vd.hidden then vd.ui:keyreleased(key, scancode, isrepeat) end
+  for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then win:keyreleased(key, scancode, isrepeat) end end
 end
 
 function vd.wheelmoved(x, y)
-  if vd.hidden then return end
-  for i, win in ipairs(vd.windows) do win:wheelmoved(x, y) end
+  if not vd.hidden then vd.ui:wheelmoved(x,y) end
+  for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then win:wheelmoved(x, y) end end
 end
 
 function vd.textinput(text)
-  if vd.hidden then return end
-  for i, win in ipairs(vd.windows) do win:textinput(text) end
+  if not vd.hidden then vd.ui:textinput(text) end
+  for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then win:textinput(text) end end
+end
+
+function vd.resize(w, h)
+  
+end
+
+function vd.addWindow(win)
+   if (win.hasFrame) then
+    vd.ui:addWidget(win.frame)
+  end
+  table.insert(vd.windows, win)
 end
 
 function vd.print(str)
@@ -150,6 +170,16 @@ function vd.setByName(refstr, value, env)
   end
 
   prev[curV] = value
+end
+
+function vd.resize(w, h)
+  local vdw = math.min(350, math.max(math.floor(w/3), 200))
+  local vdh = math.min(250, math.max(math.floor(h/4), 150))
+  vd.browser.frame.w, vd.browser.frame.h = vdw, h - vdh - 6
+  vd.control.frame.w, vd.control.frame.h, vd.control.frame.x, vd.control.frame.y = vdw, vdh, 2, h-vdh-2
+  vd.console.frame.w, vd.console.frame.h, vd.console.frame.x, vd.console.frame.y = w-vdw-6, vdh, vdw+4, h-vdh-2
+
+  vd.ui:resize(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
 _G._vudu = vd

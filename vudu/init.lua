@@ -7,9 +7,10 @@ require (path .. "Widgets/TextWidget")
 require (path .. "Widgets/TextFieldWidget")
 require (path .. "Widgets/vuduFieldWidget")
 
-table.insert(vd.windows, require(path .. "vuduConsole"))
-table.insert(vd.windows, require(path .. "vuduBrowser"))
-table.insert(vd.windows, require(path .. "vuduControl"))
+vd.addWindow(require(path .. "vuduConsole"))
+vd.addWindow(require(path .. "vuduBrowser"))
+vd.addWindow(require(path .. "vuduControl"))
+vd.addWindow(require(path .. "vuduHotkey"))
 
 _vdpath = nil
 

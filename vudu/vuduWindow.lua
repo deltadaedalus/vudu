@@ -9,34 +9,29 @@ local vdwin = {
 }
 vdwin.__index = vdwin
 
-function vdwin.new(w, h, settings)
-  return vdwin.setup({}, w, h, settings)
-end
-
-function vdwin.setup(t, w, h, settings)
+function vdwin.new(t, settings)
   settings = settings or {}
   
   local self = setmetatable(t, vdwin)
-  self.x = 0
-  self.y = 0
-  self.w = w
-  self.h = h
+  self.x = settings.x or 0
+  self.y = settings.y or 0
+  self.w = settings.w or 20
+  self.h = settings.h or 20
+  self.hasFrame = settings.hasFrame
+  self.runHidden = settings.runHidden
   
-  self.load = settings.load
-  self.update = settings.update
-  self.draw = settings.draw
-  
-  self.ui = vdui.new(self)
-  self:addTopWidget()
-  self:load()
+  if (self.hasFrame) then
+    self.frame = vdui.widget.frame.new(self.x, self.y, self.w, self.h, 6)
+    self.frame.idleColor = vdwin.windowColor
+  end
   
   return self
 end
 
 function vdwin:addTopWidget()
-  local frame = vdui.widget.frame.new(0, 0, self.w, 12, 6)
+  local frame = vdui.widget.frame.new(0, 0, self.w, 12, 6, {onResize = function(self) self.w = self.parent.w end})
   frame.idleColor = self.headerColor
-  self.ui:addWidget(frame)
+  self.frame:addWidget(frame)
   local minimizer = vdui.widget.new(0, 0, 12, 12, 6, {onRelease = function(self) self.target.h, self.savedH = self.savedH, self.target.h end})
   minimizer.target = self
   minimizer.savedH = 12
@@ -48,17 +43,14 @@ function vdwin:setCallback(index, func)
 end
 
 function vdwin:load() end
-function vdwin:update(dt) self.ui:update(dt) end
-function vdwin:draw() self.ui:draw() end
-function vdwin:mousepressed(x, y, button, isTouch) self.ui:mousepressed(x, y, button, isTouch) end
-function vdwin:mousereleased(x, y, button, isTouch) self.ui:mousereleased(x, y, button, isTouch) end
-function vdwin:keypressed(key, scancode, isrepeat) self.ui:keypressed(key, scancode, isrepeat) end
-function vdwin:keyreleased(x, y, button, isTouch) self.ui:keyreleased(key, scancode, isrepeat) end
-function vdwin:wheelmoved(x, y) self.ui:wheelmoved(x, y) end
-function vdwin:textinput(text) self.ui:textinput(text) end
-
-function vdwin:gotFocus() end
-function vdwin:lostFocus() end
+function vdwin:update(dt) end
+function vdwin:draw() end
+function vdwin:mousepressed(x, y, button, isTouch) end
+function vdwin:mousereleased(x, y, button, isTouch) end
+function vdwin:keypressed(key, scancode, isrepeat) end
+function vdwin:keyreleased(key, scancode, isrepeat) end
+function vdwin:wheelmoved(x, y)  end
+function vdwin:textinput(text) end
 
 function vdwin:startDraw()
   love.graphics.stencil(function() love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, 6) end, "replace", 1, false)

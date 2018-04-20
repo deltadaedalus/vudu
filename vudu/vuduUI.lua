@@ -1,5 +1,4 @@
 local vdUtil = require(_vdpath .. "vuduUtil")
-local vd = require(_vdpath .. "vudu")
 
 local vdui = {
   releaseFade = 0.5,
@@ -7,14 +6,13 @@ local vdui = {
 }
 vdui.__index = vdui
 
-function vdui.new(window)
+function vdui.new()
   local self = setmetatable({}, vdui)
   self.heldWidget = nil
   
   self.widgets = {}
   self.all = {}
   self.textTarget = nil
-  self.window = window
   
   return self
 end
@@ -24,7 +22,7 @@ function vdui:update(dt)
   if self.heldWidget then
     local cx, cy = self.heldWidget:getRealPosition();
     local mx, my = love.mouse.getPosition();
-    self.heldWidget:whileHeld(mx - cx - self.window.x, my - cy - self.window.y, dt)
+    self.heldWidget:whileHeld(mx - cx, my - cy, dt)
   end
   for i, w in ipairs(self.widgets) do
     w:update(dt)
@@ -39,7 +37,7 @@ end
 
 function vdui:mousepressed(x, y, button, isTouch)
   for i, w in ipairs(self.widgets) do
-    if w:checkContains(x, y) then
+    if (not w.unClickable) and w:checkContains(x, y) then
       w:changeColor(w.pressColor, vdui.pressFade)
       self.heldWidget = w
       break;
@@ -58,11 +56,10 @@ function vdui:mousereleased(x, y, button, isTouch)
     self.heldWidget = nil
   else
     for i, w in ipairs(self.widgets) do
-      if w:checkContains(x, y) then
+      if (not w.unClickable) and w:checkContains(x, y) then
         w:onRelease(x, y, button, isTouch)
         break;
       end
-
     end
   end
 
@@ -82,8 +79,6 @@ end
 
 function vdui:wheelmoved(x, y)
   local mx, my = love.mouse.getPosition()
-  mx = mx - self.window.x
-  my = my - self.window.y
   for i, w in ipairs(self.widgets) do
     if w:checkContains(mx, my) then w:wheelmoved(x, y) end
   end
@@ -108,6 +103,13 @@ function vdui:removeWidget(w)
     end
   end
   w.ui = nil
+end
+
+function vdui:resize(w, h)
+  for i, w in ipairs(self.widgets) do
+    if w.onResize then w:onResize() end
+    w:propagateResize()
+  end
 end
 
 
@@ -137,14 +139,17 @@ function vdwg.new(x, y, w, h, r, settings)
   self.h = h or 32
   self.r = r or 6
   
+  self.update = settings.update
   self.onPress = settings.onPress
   self.onRelease = settings.onRelease
   self.whileHeld = settings.whileHeld
+  self.onResize = settings.onResize
   self.draw = settings.draw
   self.idleColor = settings.idleColor
   self.hoverColor = settings.hoverColor
   self.pressColor = settings.pressColor
   self.image = settings.image
+  self.unClickable = settings.unClickable
   
   self.isHovered = false
   self.colorStartTime = 0
@@ -160,17 +165,18 @@ function vdwg:whileHeld(x, y, dt) end
 function vdwg:onRelease(x, y, button, isTouch) end
 function vdwg:update(dt) end
 function vdwg:wheelmoved(x, y) end
+function vdwg:onResize() return true end
 
 function vdwg:changeColor(targetColor, dt)
   dt = dt or 0
   self.startColor = self:getColor()
-  self.colorStartTime = vd.timer
-  self.colorEndTime = vd.timer + dt
+  self.colorStartTime = _vudu.timer
+  self.colorEndTime = _vudu.timer + dt
   self.endColor = targetColor
 end
 
 function vdwg:getColor()
-  local diff = math.min((vd.timer - self.colorStartTime) / (self.colorEndTime - self.colorStartTime), 1)
+  local diff = math.min((_vudu.timer - self.colorStartTime) / (self.colorEndTime - self.colorStartTime), 1)
   local color = vdUtil.lerpColor(diff, self.startColor, self.endColor)
   return color
 end
@@ -196,6 +202,57 @@ function vdwg:getRealPosition()
   return cx, cy
 end
 
+function vdwg:propagateResize()
+  for i, w in ipairs(self.widgets) do
+    if w.onResize then w:onResize() end
+    w:propagateResize()
+  end
+end
+
+--Position mutators
+--edge_ sets the position of the _ edge while keeping the position of the opposite edge constant
+function vdwg:edgeL(v) self.w, self.x = math.max(self.x+self.w-v, self.r*2), v end
+function vdwg:edgeR(v) self.w = math.max(v-self.x, self.r*2); self.x = v-self.w end
+function vdwg:edgeT(v) self.h, self.y = math.max(self.y+self.h-v, self.r*2), v end
+function vdwg:edgeB(v) self.h = math.max(v-self.y, self.r*2); self.y = v-self.h end
+--move_ moves the object such that the _ edge is at the given value while keeping size constant
+function vdwg:moveL(v) self.x = v end
+function vdwg:moveR(v) self.x = v - self.w end
+function vdwg:moveT(v) self.y = v end
+function vdwg:moveB(v) self.y = v - self.h end
+function vdwg:moveCX(v) self.x = v - self.w/2-2 end
+function vdwg:moveCY(v) self.y = v - self.h/2-2 end
+--set_ simply sets the _ parameter, % the size of the window, so negative numbers wrap
+function vdwg:setX(v) self.x = v % self.parent.w end
+function vdwg:setY(v) self.y = v % self.parent.w end
+function vdwg:setW(v) self.w = v end
+function vdwg:setH(v) self.h = v end
+
+--Fancier mutators
+--inset_ insets the _ edge[s] from the _ side of the parent widget
+function vdwg:inset(b) self:insetX(b); self:insetY(b) end
+function vdwg:insetX(b) self.x = b; self.w = self.parent.w-b-b end
+function vdwg:insetY(b) self.y = b; self.h = self.parent.h-b-b end
+function vdwg:insetL(b) self:edgeL(b) end
+function vdwg:insetR(b) self:edgeR(self.parent.w-b) end
+function vdwg:insetT(b) self:edgeT(b) end
+function vdwg:insetB(b) self:edgeB(self.parent.h-b) end
+--grav_ moves the _ edge to b distance from the parent's edge
+function vdwg:gravL(b) self.x = self.parent.x + b end
+function vdwg:gravR(b) self.x = self.parent.w-self.w-b end
+function vdwg:gravT(b) self.y = self.parent.y + b end
+function vdwg:gravB(b) self.y = self.parent.h-self.h-b end
+--center_ centers on the _ axis without changing size
+function vdwg:centerX(w) self:moveCX((w or self.parent):getCX()) end
+function vdwg:centerY(w) self:moveCY((w or self.parent):getCY()) end
+
+--Position getters
+function vdwg:getL() return self.x end
+function vdwg:getR() return self.x + self.w end
+function vdwg:getT() return self.y end
+function vdwg:getB() return self.y + self.h end
+function vdwg:getCX() return self.x + self.w/2 end
+function vdwg:setCY() return self.y + self.h/2 end
 
 
 
@@ -219,18 +276,20 @@ end
 vdwg.frame = setmetatable({}, vdwg)
 vdwg.frame.__index = vdwg.frame
 
-function vdwg.frame.new(x, y, w, h, r)
-  local self = setmetatable(vdwg.new(x, y, w, h, r), vdwg.frame)
+function vdwg.frame.new(x, y, w, h, r, settings)
+  settings = settings or {}
+  local self = setmetatable(vdwg.new(x, y, w, h, r, settings), vdwg.frame)
   self.heldWidget = nil
   self.tox, self.toy = 0,0
   self.ox, self.oy = 0,0
+  self.scrollable = settings.scrollable
   
   return self
 end
 
 function vdwg.frame:onPress(x, y)
   for i, w in ipairs(self.widgets) do
-    if w:checkContains(x - self.ox, y - self.oy) then
+    if (not w.unClickable) and w:checkContains(x - self.ox, y - self.oy) then
       w:changeColor(w.pressColor, vdui.pressFade)
       self.heldWidget = w
       break;
@@ -299,14 +358,13 @@ function vdwg.frame:removeWidget(w)
 end
 
 function vdwg.frame:wheelmoved(x, y)
-  self.tox, self.toy = self.tox + x*20, self.toy + y*20
+  if self.scrollable then
+    self.tox, self.toy = self.tox + x*20, self.toy + y*20
+  else
+    for i, w in ipairs(self.widgets) do --Todo: contain check
+      w:wheelmoved(x, y)
+    end
+  end
 end
-
-
-
-
---
---That's all folks
---
 
 return vdui

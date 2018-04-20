@@ -36,6 +36,7 @@ function vdw.slider:whileHeld(x, y, dt)
     local t = math.min(math.max(vdUtil.projectScale(dx, dy, sx, sy), 0), 1)
 
     self.targetValue = self.min + t*(self.max-self.min)
+    self.moving = true
 end
 
 function vdw.slider:onRelease(x, y, button, isTouch)
@@ -44,9 +45,10 @@ end
 
 function vdw.slider:update(dt)
     local wasMoving = self.moving
-    self.moving = math.abs((self.currentValue-self.targetValue) / (self.max-self.min)) > .001 or self.ui.heldWidget == self
-    if wasMoving and not self.moving then
+    self.moving = self.moving and (math.abs((self.currentValue-self.targetValue) / (self.max-self.min)) > .001 or self.ui.heldWidget == self)
+    if wasMoving and (not self.moving) then
         self.currentValue = self.targetValue
+        if self.targetRef then vd.setByName(self.targetRef, self.currentValue) end
     end
 
     if self.moving then --if currently moving, enforce will upon targetRef
@@ -62,6 +64,7 @@ function vdw.slider:draw()
     vdUtil.roundLine(self.r*2, self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y)
     local sx, sy = self.endPoint.x - self.startPoint.x, self.endPoint.y - self.startPoint.y
     local along = (self.currentValue - self.min) / (self.max-self.min)
+    along = math.max(math.min(along, 1), 0)
     love.graphics.setColor(self:getColor())
     love.graphics.circle("fill", self.startPoint.x + sx*along, self.startPoint.y + sy*along, self.r)
 end
@@ -69,6 +72,7 @@ end
 function vdw.slider:checkContains(x, y)
     local sx, sy = self.endPoint.x - self.startPoint.x, self.endPoint.y - self.startPoint.y
     local along = (self.currentValue - self.min) / (self.max-self.min)
+    along = math.max(math.min(along, 1), 0)
     local px, py = self.startPoint.x + sx*along, self.startPoint.y + sy*along
 
     return vdUtil.sqDist(x, y, px, py) < self.r * self.r
@@ -77,4 +81,9 @@ end
 function vdw.slider:gotoValue(value)
     self.targetValue = value
     self.moving = true
+end
+
+function vdw.slider:updatePosition()
+    self.startPoint = {x = self.x, y = self.y}
+    self.endPoint = {x = self.x + self.w, y = self.y + self.h}
 end
