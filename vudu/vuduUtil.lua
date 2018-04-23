@@ -48,9 +48,10 @@ function vdUtil.projectScale(x1,y1,x2,y2)
   return (x1*x2 + y1*y2) / (x2*x2 + y2*y2)
 end
 
+local _maxAlpha = love._version_major < 11 and 255 or 1
 function vdUtil.lerpColor(t, c1, c2)
   local s = 1-t
-  return {s * c1[1] + t * c2[1], s * c1[2] + t * c2[2], s * c1[3] + t * c2[3], s * (c1[4] or 1) + t * (c2[4] or 1)}
+  return {s * c1[1] + t * c2[1], s * c1[2] + t * c2[2], s * c1[3] + t * c2[3], s * (c1[4] or _maxAlpha) + t * (c2[4] or _maxAlpha)}
 end
 
 function vdUtil.moveTowards(current, target, maxDelta)
@@ -60,6 +61,13 @@ function vdUtil.moveTowards(current, target, maxDelta)
   else
     return current + maxDelta * (diff / math.abs(diff))
   end
+end
+
+function vdUtil.copyColor(value, target)
+  target[1] = value[1]
+  target[2] = value[2]
+  target[3] = value[3]
+  target[4] = value[4] or _maxAlpha
 end
 
 return vdUtil

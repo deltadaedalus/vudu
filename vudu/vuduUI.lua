@@ -1,23 +1,51 @@
 local vdUtil = require(_vdpath .. "vuduUtil")
 
 local vdui = {
-  releaseFade = 0.5,
-  pressFade = 0.1
+  releaseFade = 0.2,
+  pressFade = 0.05,
+  hoverFade = 0.1
 }
 vdui.__index = vdui
 
 function vdui.new()
   local self = setmetatable({}, vdui)
   self.heldWidget = nil
+  self.hoverWidget = nil
   
   self.widgets = {}
   self.all = {}
   self.textTarget = nil
+  self.x = 0
+  self.y = 0
+  self.w = love.graphics.getWidth()
+  self.h = love.graphics.getHeight()
   
   return self
 end
 
 function vdui:update(dt)
+  local mx, my = love.mouse.getPosition()
+
+  if self.hoverWidget and not self.hoverWidget:checkContains(mx, my) then
+    self.hoverWidget:changeColor(self.hoverWidget.idleColor, vdui.hoverFade)
+    self.hoverWidget:onUnHover()
+    self.hoverWidget = nil
+  end
+
+  for i, w in ipairs(self.widgets) do
+    if (not w.unClickable) and self.hoverWidget ~= w and self.heldWidget ~= w and w:checkContains(mx, my) then
+      if self.hoverWidget then
+        self.hoverWidget:changeColor(self.hoverWidget.idleColor, vdui.hoverFade)
+        self.hoverWidget:onUnHover()
+      end
+      w:changeColor(w.hoverColor, vdui.hoverFade)
+      w:onHover()
+      self.hoverWidget = w
+      break;
+    end
+  end
+
+  if self.hoverWidget then self.hoverWidget:whileHovered(mx - self.hoverWidget.x, my - self.hoverWidget.y, dt) end
   
   if self.heldWidget then
     local cx, cy = self.heldWidget:getRealPosition();
@@ -30,8 +58,8 @@ function vdui:update(dt)
 end
 
 function vdui:draw()
-  for i, v in ipairs(self.widgets) do
-    v:draw()
+  for i = #self.widgets, 1, -1 do
+    self.widgets[i]:draw()
   end
 end
 
@@ -43,6 +71,8 @@ function vdui:mousepressed(x, y, button, isTouch)
       break;
     end
   end
+
+  if self.heldWidget ~= self.textTarget then self.textTarget = nil end
   
   if self.heldWidget ~= nil then
     self.heldWidget:onPress(x - self.heldWidget.x, y - self.heldWidget.y)
@@ -51,13 +81,13 @@ end
 
 function vdui:mousereleased(x, y, button, isTouch)
   if self.heldWidget then
-    self.heldWidget:changeColor(self.heldWidget.idleColor, vdui.releaseFade)
-    self.heldWidget:onRelease(x, y, button, isTouch)
+    self.heldWidget:onRelease(x - self.heldWidget.x, y - self.heldWidget.y, button, isTouch)
+    self.heldWidget:changeColor(self.heldWidget:checkContains(x, y) and self.heldWidget.hoverColor or self.heldWidget.idleColor, vdui.releaseFade)
     self.heldWidget = nil
   else
     for i, w in ipairs(self.widgets) do
       if (not w.unClickable) and w:checkContains(x, y) then
-        w:onRelease(x, y, button, isTouch)
+        w:onRelease(x - self.heldWidget.x, y - self.heldWidget.y, button, isTouch)
         break;
       end
     end
@@ -92,7 +122,16 @@ end
 
 function vdui:addWidget(w)
   table.insert(self.widgets, w)
+  table.insert(self.all, w)
   w.ui = self
+  w.parent = self
+end
+
+function vdui:addWidgetFront(w)
+  table.insert(self.widgets, 1, w)
+  table.insert(self.all, w)
+  w.ui = self
+  w.parent = self
 end
 
 function vdui:removeWidget(w)
@@ -102,10 +141,19 @@ function vdui:removeWidget(w)
       break;
     end
   end
+  
+  for i, v in ipairs(w.parent.widgets) do
+    if v == w then
+      table.remove(w.parent.widgets, i)
+      break;
+    end
+  end
+
   w.ui = nil
 end
 
 function vdui:resize(w, h)
+  self.bounds = {x = 0, y = 0, w = love.graphics.getWidth(), h = love.graphics.getHeight()}
   for i, w in ipairs(self.widgets) do
     if w.onResize then w:onResize() end
     w:propagateResize()
@@ -117,12 +165,9 @@ end
 
 
 local vdwg = {
-  idleColor_pre11 = {192, 192, 192},
-  hoverColor_pre11 = {200, 200, 200},
-  pressColor_pre11 = {192, 192, 224},
-  idleColor = {3/4, 3/4, 3/4},
-  hoverColor = {25/32, 25/32, 25/32},
-  pressColor = {13/16, 3/4, 15/16},
+  idleColor = _vudu.colors.buttonIdle,
+  hoverColor = _vudu.colors.buttonHover,
+  pressColor = _vudu.colors.buttonPress,
 }
 vdwg.__index = vdwg
 
@@ -166,6 +211,9 @@ function vdwg:onRelease(x, y, button, isTouch) end
 function vdwg:update(dt) end
 function vdwg:wheelmoved(x, y) end
 function vdwg:onResize() return true end
+function vdwg:onHover() end
+function vdwg:whileHovered(x, y, dt) end
+function vdwg:onUnHover() end
 
 function vdwg:changeColor(targetColor, dt)
   dt = dt or 0
@@ -283,6 +331,7 @@ function vdwg.frame.new(x, y, w, h, r, settings)
   self.tox, self.toy = 0,0
   self.ox, self.oy = 0,0
   self.scrollable = settings.scrollable
+  self.shufflable = settings.shufflable
   
   return self
 end
@@ -290,7 +339,6 @@ end
 function vdwg.frame:onPress(x, y)
   for i, w in ipairs(self.widgets) do
     if (not w.unClickable) and w:checkContains(x - self.ox, y - self.oy) then
-      w:changeColor(w.pressColor, vdui.pressFade)
       self.heldWidget = w
       break;
     end
@@ -298,6 +346,7 @@ function vdwg.frame:onPress(x, y)
   
   if self.heldWidget ~= nil then
     self.heldWidget:onPress(x - self.ox - self.heldWidget.x, y - self.oy - self.heldWidget.y)
+    self.heldWidget:changeColor(self.heldWidget.pressColor, vdui.pressFade)
   end
 end
 
@@ -307,8 +356,12 @@ end
 
 function vdwg.frame:onRelease(x, y)
   if self.heldWidget ~= nil then
-    self.heldWidget:changeColor(self.heldWidget.idleColor, vdui.releaseFade)
     self.heldWidget:onRelease(x - self.ox - self.heldWidget.x, y - self.oy - self.heldWidget.y)
+    if (self.heldWidget:checkContains(x-self.ox, y-self.oy)) then
+      self.heldWidget:changeColor(self.heldWidget.hoverColor, vdui.hoverFade)
+    else
+      self.heldWidget:changeColor(self.heldWidget.idleColor, vdui.releaseFade)
+    end
     self.heldWidget = nil
   end
 end
@@ -330,9 +383,9 @@ function vdwg.frame:draw()
   
   love.graphics.push()
   love.graphics.translate(self.x + self.ox, self.y + self.oy)
-  for i, w in ipairs(self.widgets) do
-    love.graphics.setColor(1, 1, 1)
-    w:draw()
+  for i = #self.widgets, 1, -1 do
+    love.graphics.setColor(255, 255, 255)
+    self.widgets[i]:draw()
   end
   love.graphics.pop()
   
@@ -344,7 +397,7 @@ function vdwg.frame:addWidget(w)
     error("Trying to add widget cross-ui")
   end
   table.insert(self.widgets, w)
-  table.insert(self.ui.all, w)
+  if self.ui then table.insert(self.ui.all, w) end
   w.ui = self.ui
   w.parent = self
 end
@@ -358,12 +411,41 @@ function vdwg.frame:removeWidget(w)
 end
 
 function vdwg.frame:wheelmoved(x, y)
-  if self.scrollable then
-    self.tox, self.toy = self.tox + x*20, self.toy + y*20
-  else
-    for i, w in ipairs(self.widgets) do --Todo: contain check
-      w:wheelmoved(x, y)
+  if self.scrollable then self.toy = self.toy + y*20 end
+  if self.shufflable then self.tox = self.tox + x*20 end
+  for i, w in ipairs(self.widgets) do --Todo: contain check
+    w:wheelmoved(self.shufflable and 0 or x, self.scrollable and 0 or y)
+  end
+end
+
+function vdwg.frame:onHover() end
+function vdwg.frame:whileHovered(x, y, dt)
+  if self.hoverWidget and not self.hoverWidget:checkContains(x-self.ox, y-self.oy) then
+    self.hoverWidget:changeColor(self.hoverWidget.idleColor, vdui.hoverFade)
+    self.hoverWidget:onUnHover()
+    self.hoverWidget = nil
+  end
+
+  for i, w in ipairs(self.widgets) do
+    if (not w.unClickable) and self.hoverWidget ~= w and self.heldWidget ~= w and w:checkContains(x - self.ox, y - self.oy) then
+      if self.hoverWidget then
+        self.hoverWidget:changeColor(self.hoverWidget.idleColor, vdui.hoverFade)
+        self.hoverWidget:onUnHover()
+      end
+      w:changeColor(w.hoverColor, vdui.hoverFade)
+      w:onHover()
+      self.hoverWidget = w
+      break;
     end
+  end
+
+  if self.hoverWidget then self.hoverWidget:whileHovered(x - self.ox - self.hoverWidget.x, y - self.oy - self.hoverWidget.y, dt) end
+end
+
+function vdwg.frame:onUnHover()
+  if self.hoverWidget then
+    self.hoverWidget:onUnHover()
+    self.hoverWidget = nil
   end
 end
 

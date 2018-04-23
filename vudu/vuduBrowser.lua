@@ -18,10 +18,6 @@ vd.browser = vdwin.new({
   
   browserFrame = nil,
   widgetCache = {},
-
-  expColor_pre11 = {128, 128, 128},
-  expColor = {1/2, 1/2, 1/2},
-  fieldColor = {7/8, 7/8, 7/8}
 }, {
   x = 2, 
   y = 2, 
@@ -35,7 +31,8 @@ function vd.browser:load()
   
   vd.browser.browserFrame = vdui.widget.frame.new(2, 20, 228, 424, 6, {
     onResize = function(self) self:edgeL(2); self:edgeT(20); self:insetB(2); self:insetR(16) end,
-    scrollable = true
+    scrollable = true,
+    shufflable = true
   })
   
   vd.browser.browserSlider = vdui.widget.slider.new(238, 26, 0, 412, 6, {
@@ -44,6 +41,8 @@ function vd.browser:load()
     max = -20,
     targetValue = 0,
     residual = 0.001,
+    idleColor = vd.colors.buttonPress,
+    pressColor = vd.colors.buttonIdle,
     onResize = function(self) self:setX(-8); self:insetB(8) self:updatePosition() end,
   })
   
@@ -68,17 +67,21 @@ function vd.browser.bakeTable(t, context, list, depth)
   
   for i, v in pairs(t) do if type(i) ~= 'number' and not vd.browser.ignore[context .. i] then
     local typ = type(v)
-    table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
-    if typ == 'table' and vd.browser.expand[context .. i] then
-      vd.browser.bakeTable(v, context .. i, list, depth+1)
+    if not (typ == 'function' and not vd.showFunctions) then
+      table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
+      if typ == 'table' and vd.browser.expand[context .. i] then
+        vd.browser.bakeTable(v, context .. i, list, depth+1)
+      end
     end
   end end
   
   for i, v in ipairs(t) do
     local typ = type(v)
-    table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
-    if typ == 'table' and vd.browser.expand[context .. i] then
-      vd.browser.bakeTable(v, context .. i, list, depth+1)
+    if not (typ == 'function' and not vd.showFunctions) then
+      table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
+      if typ == 'table' and vd.browser.expand[context .. i] then
+        vd.browser.bakeTable(v, context .. i, list, depth+1)
+      end
     end
   end
   
@@ -114,14 +117,17 @@ function vd.browser.addBrowserWidget(widgetDat, x, y)
     if typ == 'table' then
       local expButton = vdui.widget.new(x - vd.browser.ySpace, y+1, vd.browser.ySpace-2, vd.browser.ySpace-2, vd.browser.ySpace/2-1, {
         onRelease = vd.browser.expandCallback,
-        idleColor = vd.browser.expColor
+        idleColor = vd.colors.highlight
       })
       expButton.target = widgetDat.ref
       table.insert(cache, expButton)
       
       --frame:addWidget(vdui.widget.text.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, tostring(value), {textColor = vd.colors[typ]}))
     elseif typ == 'string' or typ == 'number' then
-      local valueWidget = vdui.widget.vuduField.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, widgetDat.ref, {textColor = vd.colors[typ], idleColor = vd.browser.fieldColor})
+      local valueWidget = vdui.widget.vuduField.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, widgetDat.ref, {textColor = vd.colors[typ], idleColor = vd.colors.midhighlight})
+      table.insert(cache, valueWidget)
+    elseif typ == 'boolean' then
+      local valueWidget = vdui.widget.checkBox.new(x + labelLen + 12, y+1, vd.browser.ySpace-2, vd.browser.ySpace-2, 6, {idleColor = vd.colors.midhighlight, targetRef = widgetDat.ref})
       table.insert(cache, valueWidget)
     else
       local valueText = vdui.widget.text.new(x + labelLen + 12, y+1, valueLen + 12, vd.browser.ySpace-2, 6, tostring(value), {textColor = vd.colors[typ]})
@@ -140,27 +146,7 @@ end
 
 function vd.browser.expandCallback(self, x, y, button, isTouch)
   vd.browser.expand[self.target] = not vd.browser.expand[self.target]
-end
-
-
-function vd.browser.drawBaked(list, x, y)
-  for i, v in ipairs(list) do
-    if i == vd.browser.hoverIndex then
-      love.graphics.setColor(224, 224, 224)
-      love.graphics.rectangle("fill", 0, y + (i - 1)*vd.browser.ySpace, 500, vd.browser.ySpace)
-    end
-    
-    if type(v.label) ~= 'number' then
-      local typ = type(v.value)
-      love.graphics.setColor(255, 255, 255)
-      love.graphics.print({vd.colors.label, v.label .. ': ', vd.colors[typ], tostring(v.value) .. ""}, x + v.depth*vd.browser.xSpace, y + (i - 1)*vd.browser.ySpace)
-    else
-      love.graphics.setColor(vd.colors[type(v.value)])
-      love.graphics.print(tostring(v.value) .. "", x + v.depth*vd.browser.xSpace, y + (i - 1)*vd.browser.ySpace)
-      love.graphics.setColor(vd.colors.index)
-      love.graphics.printf(tostring(v.label), x + v.depth*vd.browser.xSpace - 104, y + (i - 1)*vd.browser.ySpace, 100, 'right')
-    end
-  end
+  self.idleColor = vd.browser.expand[self.target] and vd.colors.lowlight or vd.colors.highlight
 end
 
 

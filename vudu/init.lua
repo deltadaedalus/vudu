@@ -6,6 +6,7 @@ require (path .. "Widgets/SliderWidget")
 require (path .. "Widgets/TextWidget")
 require (path .. "Widgets/TextFieldWidget")
 require (path .. "Widgets/vuduFieldWidget")
+require (path .. "Widgets/CheckboxWidget")
 
 vd.addWindow(require(path .. "vuduConsole"))
 vd.addWindow(require(path .. "vuduBrowser"))

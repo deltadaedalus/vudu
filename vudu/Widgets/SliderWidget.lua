@@ -3,10 +3,7 @@ local vdui = require(_vdpath .. "vuduUI")
 local vdw = vdui.widget
 local vdUtil = require(_vdpath .. "vuduUtil")
 
-vdw.slider = setmetatable({
-    slideColor_pre11 = {128, 128, 128},
-    slideColor = {1/2, 1/2, 1/2}
-}, vdw)
+vdw.slider = setmetatable({}, vdw)
 vdw.slider.__index = vdw.slider
 
 function vdw.slider.new(x, y, w, h, r, settings)
@@ -16,7 +13,7 @@ function vdw.slider.new(x, y, w, h, r, settings)
     self.min = settings.min or 0
     self.targetValue = settings.targetValue or 0
     self.residual = settings.residual or 0;
-
+    self.slideColor = settings.slideColor or vd.colors.lowlight
 
     self.startPoint = settings.startPoint or {x = x, y = y}
     self.endPoint = settings.endPoint or {x = x+w, y = y+h}

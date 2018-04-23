@@ -4,7 +4,6 @@ local vdui = require(_vdpath .. "vuduUI")
 
 vd.control = vdwin.new({
   pauseButtons = {},
-  textBGColor = {7/8, 7/8, 7/8},
 }, {
   x = 502, 
   y = 450, 
@@ -24,6 +23,8 @@ function vd.control:load()
     max = 3,
     targetValue = 0,
     residual = 0.002,
+    idleColor = vd.colors.buttonPress,
+    pressColor = vd.colors.buttonIdle,
     onResize = function(self) self:insetR(10); self:updatePosition() end,
   })
 
@@ -38,28 +39,28 @@ function vd.control:load()
 
   local multText = vdui.widget.text.new(240, 32, 40, 16, 6, 'ye', {
     update = function(self, dt) self.text = string.sub(tostring(2^vd.timeScale), 0, 4) end,
-    idleColor = vd.control.textBGColor,
+    idleColor = vd.colors.midhighlight,
     onResize = valueResize
   })
   local multLabel = vdui.widget.text.new(180, 32, 64, 16, 6, 'Speed', {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, onResize = labelResize, unClickable = true})
 
   local deltaText = vdui.widget.text.new(240, 50, 54, 16, 6, 'ye', {
     update = function(self, dt) self.text = string.sub(tostring(love.timer.getDelta()), 0, 6) end,
-    idleColor = vd.control.textBGColor,
+    idleColor = vd.colors.midhighlight,
     onResize = valueResize
   })
   local deltaLabel = vdui.widget.text.new(180, 50, 64, 16, 6, 'Delta', {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, onResize = labelResize, unClickable = true})
 
   local fpsText = vdui.widget.text.new(240, 68, 40, 16, 6, 'ye', {
     update = function(self, dt) self.text = string.sub(tostring(love.timer.getFPS()), 0, 4) end,
-    idleColor = vd.control.textBGColor,
+    idleColor = vd.colors.midhighlight,
     onResize = valueResize
   })
   local fpsLabel = vdui.widget.text.new(180, 68, 64, 16, 6, 'FPS', {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, onResize = labelResize, unClickable = true})
 
   local timeText = vdui.widget.text.new(240, 86, 54, 16, 6, 'ye', {
     update = function(self, dt) self.text = tostring(math.floor(vudu.timer/60)) .. ':' ..  tostring(math.floor(vudu.timer%60)) end,
-    idleColor = vd.control.textBGColor,
+    idleColor = vd.colors.midhighlight,
     onResize = valueResize
   })
   local timeLabel = vdui.widget.text.new(180, 86, 64, 16, 6, 'Elapsed', {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, onResize = labelResize, unClickable = true})

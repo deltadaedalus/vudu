@@ -31,6 +31,10 @@ function vdw.textField:draw()
   end
 end
 
+function vdw.textField:onPress()
+  self.cursor = #self.text
+end
+
 function vdw.textField:onRelease()
   self:onSelected()
   self.ui.textTarget = self
@@ -50,7 +54,7 @@ function vdw.textField:keypressed(key, scancode, isrepeat)
     self.cursor = math.min(#self.text, self.cursor+1)
   elseif key == 'v' and (love.keyboard.isDown('lctrl') or love.keyboard.isDown('rctrl')) then
     local clip = love.system.getClipboardText()
-    self:textInput(clip)
+    self:textinput(clip)
   elseif key == 'backspace' and self.cursor ~= 0 then
     self.text = string.sub(self.text, 1, self.cursor-1) .. string.sub(self.text, self.cursor+1, -1)
     self.cursor = math.max(0, self.cursor-1)

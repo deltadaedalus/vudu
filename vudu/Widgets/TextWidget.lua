@@ -4,7 +4,7 @@ local vdw = vdui.widget
 
 vdw.text = setmetatable({}, vdw)
 vdw.text.__index = vdw.text
-vdw.text.textColor = {0,0,0}
+vdw.text.textColor = vd.colors.text
 vdw.text.alignment = 'left'
 
 function vdw.text.new(x, y, w, h, r, text, settings)
