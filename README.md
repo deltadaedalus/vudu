@@ -3,7 +3,7 @@
 
 vudu is a simple to use in-game debugging system for the LÖVE2D game engine.
 
-*vudu is currently in version 0.1.1, i.e. it has only just been released publicly.  Some amount of bugginess, unfriendliness, or instability is possible, and is being worked on.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!*
+*vudu is currently in version 0.1.2, i.e. it has only just been released publicly.  Some amount of bugginess, unfriendliness, or instability is possible, and is being worked on.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!*
 
 *vudu currently supports Love2D versions 0.10.x and 0.11.x*
 
@@ -37,6 +37,7 @@ On the bottom right of the screen is the **Console**, it allows you to enter lua
 On the bottom left of the screen is the **Controller**, the speed of execution can be adjusted with the slider, and the game can be switched between running, paused with 0dt updates, and paused without updates.
 
 In the top right corner of the screen is the settings menu, under which you can find the following settings to tailor your vudu experience:
+
 | Name | Purpose |
 | ---- | ------- |
 | `Show Functions` | Determines whether or not function values are shown in the browser. |
@@ -60,7 +61,7 @@ end
 | -------- | ------------- |
 | `vudu.addIgnore(ignore)` | `ignore` is either a string or a table of strings which represent the names of variables not to be shown in the browser.  i.e. `vudu.addIgnore("love.graphics")` |
 
-####Some Useful Functions
+###Some Useful Functions
 
 **Nothing described below is part of the official API**, but the functionality is intended to be accessible via an official API at some point.  For now, as vudu is in early stages, here are some internal things you might find useful to tap into:
 
