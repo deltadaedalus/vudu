@@ -81,6 +81,8 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 
 | Function | Functionality |
 | -------- | ------------- |
+| `vudu.initialize()` | initializes vudu |
+| `vudu.hook()` | re-attaches vudu to the game, necessary if you do things like re-override love.draw or love.update |
 | `vudu.addIgnore(ignore)` | `ignore` is either a string or a table of strings which represent the names of variables not to be shown in the browser.  i.e. `vudu.addIgnore("love.graphics")` |
 | `vudu.hotkey.addSequence(keys, callback)` | `keys` is an ordered table of KeyConstant strings, `callback` is a 0-argument function |
 | `vudu.physics.setWorld(world)` | Sets the physics world `world` as the world for vudu.physics to render |
@@ -91,6 +93,7 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 | `vudu.graphics.drawCircle(color, duration, x, y, r, [w])` | draws a circle with radius `r` around the point `x, y`, with edge width `w` |
 | `vudu.graphics.drawText(color, duration, x, y, text)` | prints `text` at position `x, y`|
 
+This list is not exhaustive, there is more functionality which is currently internal, but will be exposed down the line.
 
 ###Some Useful Bits
 
