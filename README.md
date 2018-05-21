@@ -91,6 +91,7 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 | `vudu.graphics.drawCircle(color, duration, x, y, r, [w])` | draws a circle with radius `r` around the point `x, y`, with edge width `w` |
 | `vudu.graphics.drawText(color, duration, x, y, text)` | prints `text` at position `x, y`|
 
+
 ###Some Useful Bits
 
 **Nothing described below is part of the official API**, but the functionality is intended to be accessible via an official API at some point.  For now, as vudu is in early stages, here are some internal things you might find useful to tap into:
