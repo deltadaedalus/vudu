@@ -77,6 +77,8 @@ For a full list of things you can draw, see the Full API below.
 
 The `vudu.physics` module renders the given physics world in wireframe, including joints and contacts.  Use `vudu.physics.setWorld(world)` to set the world to be rendered, and `vudu.physics.setTransformation([x, y, z, r])` to control the offset and scale at which it is rendered.
 
+![alt text](https://i.imgur.com/mXntMrR.gif "Boing")
+
 ### Full API
 
 | Function | Functionality |
