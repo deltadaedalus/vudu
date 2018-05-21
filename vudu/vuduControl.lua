@@ -1,6 +1,6 @@
-local vd = require(_vdpath .. "vudu")
-local vdwin = require(_vdpath .. "vuduWindow")
-local vdui = require(_vdpath .. "vuduUI")
+local vd = require(_vdreq .. "vudu")
+local vdwin = require(_vdreq .. "vuduWindow")
+local vdui = require(_vdreq .. "vuduUI")
 
 vd.control = vdwin.new({
   pauseButtons = {},
@@ -78,8 +78,12 @@ function vd.control:load()
   local stopButton = vdui.widget.new(102, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Stop", 3) end,
     image = love.graphics.newImage(vd.path .. "Images/Stop.png")})
+
+  local freezeButton = vdui.widget.new(2, 96, 48, 48, 12,
+    {onRelease = function() vd.control.setPauseType("Freeze", 4) end,
+    image = love.graphics.newImage(vd.path .. "Images/Freeze.png")})
   
-  vd.control.pauseButtons = {playButton, zeroButton, stopButton}
+  vd.control.pauseButtons = {playButton, zeroButton, stopButton, freezeButton}
 
   --add widgets
   vd.control.frame:addWidget(vd.control.timeSlider)
@@ -98,15 +102,21 @@ function vd.control:load()
   playButton:changeColor(playButton.pressColor, 0)
   vd.control.frame:addWidget(zeroButton)
   vd.control.frame:addWidget(stopButton)
+  vd.control.frame:addWidget(freezeButton)
 end
   
 function vd.control.setPauseType(pauseType, activeIndex)
+  activeIndex = activeIndex or 1
   for i, v in ipairs(vd.control.pauseButtons) do
     v:changeColor(v.idleColor, .2)
   end
   vd.control.pauseButtons[activeIndex]:changeColor(vd.control.pauseButtons[activeIndex].pressColor, .2)
   vd.pauseType = pauseType
   vd.paused = pauseType ~= "Play"
+
+  if (pauseType == "Freeze") then
+    vd.capFrame = true
+  end
 end
 
 

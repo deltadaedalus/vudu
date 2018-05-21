@@ -1,6 +1,6 @@
-local vd = require(_vdpath .. "vudu")
-local vdwin = require(_vdpath .. "vuduWindow")
-local vdui = require(_vdpath .. "vuduUI")
+local vd = require(_vdreq .. "vudu")
+local vdwin = require(_vdreq .. "vuduWindow")
+local vdui = require(_vdreq .. "vuduUI")
 
 vd.browser = vdwin.new({
   ySpace = 16,

@@ -51,7 +51,12 @@ end
 local _maxAlpha = love._version_major < 11 and 255 or 1
 function vdUtil.lerpColor(t, c1, c2)
   local s = 1-t
-  return {s * c1[1] + t * c2[1], s * c1[2] + t * c2[2], s * c1[3] + t * c2[3], s * (c1[4] or _maxAlpha) + t * (c2[4] or _maxAlpha)}
+  return {
+    s * c1[1] + t * c2[1], 
+    s * c1[2] + t * c2[2], 
+    s * c1[3] + t * c2[3], 
+    s * (c1[4] or _maxAlpha) + t * (c2[4] or _maxAlpha)
+  }
 end
 
 function vdUtil.moveTowards(current, target, maxDelta)
@@ -68,6 +73,45 @@ function vdUtil.copyColor(value, target)
   target[2] = value[2]
   target[3] = value[3]
   target[4] = value[4] or _maxAlpha
+end
+
+function vdUtil.lerp(x1, y1, x2, y2, t)
+  return x1 + (x2-x1)*t, y1 + (y2-y1)*t
+end
+
+function vdUtil.dottedLine(ofs, fill, gap, points)
+  ofs = ofs % (fill+gap)
+  local draw = ofs < fill
+  local jump = draw and fill - ofs or gap + fill - ofs
+  for i = 1, #points-3, 2 do
+    local x1, y1, x2, y2 = points[i], points[i+1], points[i+2], points[i+3]
+    local dist = math.sqrt((x2-x1)^2 + (y2-y1)^2)
+    local j = 0
+    while jump < dist and j < 100 do
+      xn, yn = vdUtil.lerp(x1, y1, x2, y2, jump/dist)
+      if (draw) then love.graphics.line(x1, y1, xn, yn) end
+      x1, y1 = xn, yn
+      dist = math.sqrt((x2-x1)^2 + (y2-y1)^2)
+      draw = not draw
+      jump = draw and fill or gap
+      j = j + 1
+    end
+    jump = jump - dist
+    if draw then love.graphics.line(x1, y1, x2, y2) end
+  end
+end
+
+function vdUtil.drawGear(x, y, inradius, outradius, theta, teeth)
+  local adif = math.pi*2/teeth
+  for i = 0, teeth-1 do
+    local a = theta + adif*i
+    local x0, y0 = inradius * math.cos(a), inradius * math.sin(a)
+    local x1, y1 = inradius * math.cos(a+adif/2), inradius * math.sin(a+adif/2)
+    local x2, y2 = outradius * math.cos(a+adif/2), outradius * math.sin(a+adif/2)
+    local x3, y3 = outradius * math.cos(a+adif), outradius * math.sin(a+adif)
+    local x4, y4 = inradius * math.cos(a+adif), inradius * math.sin(a+adif)
+    love.graphics.line(x0,y0,x1,y1,x2,y2,x3,y3,x4,y4)
+  end
 end
 
 return vdUtil

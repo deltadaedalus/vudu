@@ -1,7 +1,7 @@
-local vd = require(_vdpath .. "vudu")
-local vdwin = require(_vdpath .. "vuduWindow")
-local vdui = require(_vdpath .. "vuduUI")
-local vdutil = require(_vdpath .. "vuduUtil")
+local vd = require(_vdreq .. "vudu")
+local vdwin = require(_vdreq .. "vuduWindow")
+local vdui = require(_vdreq .. "vuduUI")
+local vdutil = require(_vdreq .. "vuduUtil")
 
 vd.console = vdwin.new({
   history = {},

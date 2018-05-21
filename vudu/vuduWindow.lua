@@ -1,6 +1,6 @@
-local vd = require(_vdpath .. "vudu")
-local vdUtil = require(_vdpath .. "vuduUtil")
-local vdui = require(_vdpath .. "vuduUI")
+local vd = require(_vdreq .. "vudu")
+local vdUtil = require(_vdreq .. "vuduUtil")
+local vdui = require(_vdreq .. "vuduUI")
 
 local vdwin = {}
 vdwin.__index = vdwin

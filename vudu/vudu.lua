@@ -1,4 +1,4 @@
-local vdUtil = require(_vdpath .. "vuduUtil")
+local vdUtil = require(_vdreq .. "vuduUtil")
 
 local vd = {
   _version = '0.1.1',
@@ -63,7 +63,7 @@ local vd = {
 vd.colors = love._version_major >= 11 and vd.colors or vd.colors_pre11
 _G._vudu = vd
 
-vd.vuduUI = require(_vdpath .. "vuduUI")
+vd.vuduUI = require(_vdreq .. "vuduUI")
 vd.ui = vd.vuduUI.new()
 
 vd.defaultSettings = {
@@ -122,18 +122,33 @@ function vd.hook()
   
   
   love.update = function(dt)
-    if not (vd.pauseType == "Stop") then
+    if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then
       _update((vd.pauseType == "Zero" and 0 or dt * 2^vd.timeScale))
     end
     vd.update(dt)
   end
-  love.draw = function() _draw(); vd.draw() end
-  love.mousepressed = function(...) if not (vd.pauseType == "Stop") then _mousepressed(...) end; vd.mousepressed(...) end
-  love.mousereleased = function(...) if not (vd.pauseType == "Stop") then _mousereleased(...) end; vd.mousereleased(...) end
-  love.keypressed = function(...) if not (vd.pauseType == "Stop") then _keypressed(...) end; vd.keypressed(...) end
-  love.keyreleased = function(...) if not (vd.pauseType == "Stop") then _keyreleased(...) end; vd.keyreleased(...) end
-  love.wheelmoved = function(...) if not (vd.pauseType == "Stop") then _wheelmoved(...) end; vd.wheelmoved(...) end
-  love.textinput = function(...) if not (vd.pauseType == "Stop") then _textinput(...) end; vd.textinput(...) end
+  love.draw = function()
+    if vd.pauseType ~= "Freeze" then
+      _draw()
+    else
+      if vd.frozenFrame then love.graphics.draw(vd.frozenFrame) end
+    end
+
+    if vd.capFrame then
+      _draw()
+      love.graphics.captureScreenshot(function (id) _vudu.frozenFrame = love.graphics.newImage(id) end)
+      --love.graphics.captureScreenshot(os.time() .. 'screen.png')
+      vd.capFrame = nil
+    else
+      vd.draw()
+    end
+  end
+  love.mousepressed = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _mousepressed(...) end; vd.mousepressed(...) end
+  love.mousereleased = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _mousereleased(...) end; vd.mousereleased(...) end
+  love.keypressed = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _keypressed(...) end; vd.keypressed(...) end
+  love.keyreleased = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _keyreleased(...) end; vd.keyreleased(...) end
+  love.wheelmoved = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _wheelmoved(...) end; vd.wheelmoved(...) end
+  love.textinput = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _textinput(...) end; vd.textinput(...) end
   love.resize = function(...) _resize(...); vd.resize(...) end
   print = function(...) if not vd.print(...) then _print(...) end end
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
@@ -149,10 +164,10 @@ do
 
   function vd.draw()
     love.graphics.origin()
-    if not vd.hidden then vd.ui:draw() end
     for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then
       win:draw()
     end end
+    if not vd.hidden then vd.ui:draw() end
   end
 
   function vd.mousepressed(x, y, button, isTouch)

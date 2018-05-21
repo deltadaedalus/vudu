@@ -1,9 +1,9 @@
-local vd = require(_vdpath .. "vudu")
-local vdui = require(_vdpath .. "vuduUI")
-local vdUtil = require(_vdpath .. "vuduUtil")
+local vd = require(_vdreq .. "vudu")
+local vdui = require(_vdreq .. "vuduUI")
+local vdUtil = require(_vdreq .. "vuduUtil")
 local vdw = vdui.widget
 
-require(_vdpath .."Widgets/TextWidget")
+require(_vdreq .."Widgets/TextWidget")
 
 vdw.textField = setmetatable({}, vdw.text)
 vdw.textField.__index = vdw.textField
