@@ -7,6 +7,7 @@ vd.physics = vdwin.new({
     shape = {1/4, 1, 2/3},
     contact = {1, 1/2, 0},
     joint = {2/3, 1/4, 1},
+    error = {1, 0, 1/4},
   },
 
   world = nil,
@@ -69,6 +70,7 @@ function vd.physics:draw()
       end
     end
 
+    --Joints
     if self.renderJoints then
       love.graphics.setColor(vd.physics.colors.joint)
 
@@ -148,7 +150,48 @@ vd.physics.drawJoint["friction"] = function(joint)
 end
 
 vd.physics.drawJoint["gear"] = function(joint)
+  local j1, j2 = joint:getJoints()
+  local ratio = joint:getRatio()
+  local x1, y1 = j1:getAnchors()
+  local x2, y2 = j2:getAnchors()
+  local type1, type2 = j1:getType(), j2:getType()
+  local d = math.sqrt((x2-x1)^2 + (y2-y1)^2)
 
+  if (ratio == 0 or ratio == math.huge) then
+    love.graphics.setColor(vd.physics.colors.error)
+    vdUtil.dottedLine(0, 5, 5, {x1, y1, x2, y2})
+    love.graphics.setColor(vd.physics.colors.joint)
+    return
+  end
+
+  --if (type1 == 'revolute' and type2 == 'revolute') then
+  if (true) then  --TODO: rendering revolute-prismatic joints and prismatic-prismatic joints
+    local a1 = type1 == 'revolute' and j1:getJointAngle() or j1:getJointTranslation()/94.25*math.pi
+    local a2 = type2 == 'revolute' and j2:getJointAngle() or j2:getJointTranslation()/94.25*math.pi
+
+    local r2 = d * math.abs(ratio)/(math.abs(ratio)+1)
+    local r1 = d-r2
+
+    if (ratio <= -1) then
+      local ox, oy = (x2-x1)/d, (y2-y1)/d
+      vdUtil.drawGear(x1, y1, (r1/2)-1.5, (r1/2)+1.5, a1, 6)
+      vdUtil.drawGear(x2, y2, (r2/2)-1.5, (r2/2)+1.5, a2, math.abs(ratio * 6))
+      vdUtil.dottedLine(a1*r1/2 + r1*math.pi/12, r1*math.pi/12, r1*math.pi/12, {x2+oy*(r2/2-1.5), y2-ox*(r2/2-1.5), x1+oy*(r1/2-1.5), y1-ox*(r1/2-1.5)})
+      vdUtil.dottedLine(a1*r1/2 + r1*math.pi/12, r1*math.pi/12, r1*math.pi/12, {x1-oy*(r1/2-1.5), y1+ox*(r1/2-1.5), x2-oy*(r2/2-1.5), y2+ox*(r2/2-1.5)})
+    elseif (ratio < 0) then
+      local ox, oy = (x2-x1)/d, (y2-y1)/d
+      vdUtil.drawGear(x1, y1, (r1/2)-1.5, (r1/2)+1.5, a1, math.abs(6/ratio))
+      vdUtil.drawGear(x2, y2, (r2/2)-1.5, (r2/2)+1.5, a2, 6)
+      vdUtil.dottedLine(a2*r2/2 + r2*math.pi/12, r2*math.pi/12, r2*math.pi/12, {x2+oy*(r2/2-1.5), y2-ox*(r2/2-1.5), x1+oy*(r1/2-1.5), y1-ox*(r1/2-1.5)})
+      vdUtil.dottedLine(a2*r2/2 + r2*math.pi/12, r2*math.pi/12, r2*math.pi/12, {x1-oy*(r1/2-1.5), y1+ox*(r1/2-1.5), x2-oy*(r2/2-1.5), y2+ox*(r2/2-1.5)})
+    elseif (ratio >= 1) then
+      vdUtil.drawGear(x1, y1, r1-2.5, r1+2.5, a1, 12)
+      vdUtil.drawGear(x2, y2, r2-2.5, r2+2.5, a2, ratio * 12)
+    else
+      vdUtil.drawGear(x1, y1, r1-2.5, r1+2.5, a1, 12 / ratio)
+      vdUtil.drawGear(x2, y2, r2-2.5, r2+2.5, a2, 12)
+    end
+  end
 end
 
 vd.physics.drawJoint["motor"] = function(joint)
@@ -181,8 +224,8 @@ vd.physics.drawJoint["prismatic"] = function(joint)
   local t = joint:getJointTranslation()
 
   local dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
-  local normx, normy = (x2-x1)/dist, (y2-y1)/dist
-  if (t <= 0) then normx, normy = -normx, -normy end
+  local normx, normy = joint:getAxis()
+  --if (t <= 0) then normx, normy = -normx, -normy end
   local angle = math.atan2(normy, normx)
 
   local r = 2.5
@@ -208,6 +251,39 @@ vd.physics.drawJoint["prismatic"] = function(joint)
 end
 
 vd.physics.drawJoint["pulley"] = function(joint)
+  local x1, y1, x2, y2 = joint:getAnchors()
+  local gx1, gy1, gx2, gy2 = joint:getGroundAnchors()
+  local l1, l2 = math.sqrt((gx1-x1)^2 + (gy1-y1)^2), math.sqrt((gx2-x2)^2 + (gy2-y2)^2)
+  local ratio = joint:getRatio()
+  local r1 = 1/(ratio+1)
+  local r2 = 1-r1
+  r1, r2 = r1*8*2, r2*8*2
+  local gDist = math.sqrt((gx2-gx1)^2 + (gy2-gy1)^2)
+  local gx,gy = (gx2-gx1)/gDist, (gy2-gy1)/gDist
+  
+  local px1, py1 = gx1+gx*8, gy1+gy*8
+  local px2, py2 = gx2-gx*8, gy2-gy*8
+
+  local function wheel(x, y, r, a)
+    local sx, sy = math.cos(a), math.sin(a)
+    local bx, by = math.cos(a+math.pi/4), math.sin(a+math.pi/4)
+    local inR = math.min(8, r)
+
+    love.graphics.circle('line', x, y, r)
+    love.graphics.circle('line', x, y, 8)
+    love.graphics.line(x+sx*8, y+sy*8, x+sx*r, y+sy*r)
+    love.graphics.line(x+sy*8, y-sx*8, x+sy*r, y-sx*r)
+    love.graphics.line(x-sx*8, y-sy*8, x-sx*r, y-sy*r)
+    love.graphics.line(x-sy*8, y+sx*8, x-sy*r, y+sx*r)
+    love.graphics.line(x-bx*inR, y-by*inR, x+bx*inR, y+by*inR)
+  end
+
+  wheel(px1, py1, r1, -l1 / 8)
+  wheel(px2, py2, r2, l2 / 8)
+  vdUtil.dottedLine(0, 6, 2, {x1, y1, gx1, gy1})
+  vdUtil.dottedLine(0, 6, 2, {x2, y2, gx2, gy2})
+  vdUtil.dottedLine(l1 * r1/8, 6, 2, {px1+gy*r1, py1-gx*r1, px2+gy*r2, py2-gx*r2})
+  if (ratio ~= 1) then vdUtil.dottedLine(l1 * r1/8, 6, 2, {px2-gy*r2, py2+gx*r2, px1-gy*r1, py1+gx*r1}) end
   
 end
 
@@ -215,7 +291,6 @@ vd.physics.drawJoint["revolute"] = function(joint)
   local x1, y1 = joint:getAnchors()
   local b1, b2 = joint:getBodies()
   local angle = joint:getJointAngle() + b1:getAngle()
-  print(joint:type())
   local dx, dy = math.cos(angle), math.sin(angle)
   local bx, by = math.cos(b1:getAngle()), math.sin(b1:getAngle())
 

@@ -3,7 +3,7 @@
 
 vudu is a simple to use in-game debugging system for the LÖVE2D game engine.
 
-*vudu is currently in version 0.2.0, i.e. it has only recently been released publicly.  Some amount of bugginess, unfriendliness, or instability is possible, and is being worked on.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!*
+*vudu is currently in version 0.2.1, it has only recently been released publicly.  Some amount of bugginess, unfriendliness, or instability is possible, and is being worked on.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!*
 
 *vudu currently supports Love2D versions 0.10.x and 0.11.x*
 
@@ -29,6 +29,8 @@ While basic setup is simple for you, it's complex for vudu, so if your game chan
 Press **`** to show/hide the vudu GUI.
 
 ![alt text](https://i.imgur.com/7f220pj.png "vudu in action")
+
+In the top right is a small button, pressing this will open a dropdown with a few settings, currently these settings only filter what variables are shown in the browser
 
 On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.  To edit a bool, simply click it to flip its value.  Sometimes values push their way out of range of the browser, to see these values you can scroll left/right with shift+scrollwheel
 

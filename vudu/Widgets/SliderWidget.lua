@@ -17,7 +17,7 @@ function vdw.slider.new(x, y, w, h, r, settings)
 
     self.startPoint = settings.startPoint or {x = x, y = y}
     self.endPoint = settings.endPoint or {x = x+w, y = y+h}
-    self.currentValue = self.targetRef and vudu.getByName(self.targetRef) or self.targetValue;
+    self.currentValue = self.targetRef and vd.getByName(self.targetRef) or self.targetValue;
     self.moving = false;
 
     return self

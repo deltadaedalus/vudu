@@ -68,14 +68,18 @@ vd.ui = vd.vuduUI.new()
 
 vd.defaultSettings = {
   startHidden = true,
-  showFunctions = false
+  showFunctions = false,
+  showUnderscores = false,
 }
+
+vd.savedSettings = love.filesystem.load("vuduSettings.lua")
 
 --To be called from love.load, does what it says on the tin
 function vd.initialize(settings)
-  settings = settings or vd.defaultSettings
-  vd.hidden = settings.startHidden
+  settings = settings or (vd.savedSettings and vd.savedSettings()) or vd.defaultSettings
+  vd.hidden = settings.startHidden or false
   vd.showFunctions = settings.showFunctions
+  vd.showUnderscores = settings.showUnderscores
   if settings.theme then vd.setTheme(settings.theme) end
 
   vd.hook()
@@ -86,6 +90,7 @@ end
 
 function vd.initSettingsUI()
   local settingsButton = vd.vuduUI.widget.new(778, 2, 20, 20, 6, {
+    idleColor = vd.colors.highlight,
     onResize = function(self) self:gravR(2) end,
     onRelease = vd.toggleSettings,
   })
@@ -94,6 +99,7 @@ function vd.initSettingsUI()
     idleColor = vd.colors.window
   })
   vd.addSettingsOption(vd.settingsFrame, "Show Functions", "_vudu.showFunctions", 150, 2)
+  vd.addSettingsOption(vd.settingsFrame, "Show Underscores", "_vudu.showUnderscores", 150, 18)
 
   vd.ui:addWidget(settingsButton)
 end
@@ -105,7 +111,7 @@ function vd.addSettingsOption(frame, label, ref, x, y)
   frame:addWidget(label)
 end
 
---injects vudu into the game
+--monkeypatches vudu into the game
 function vd.hook()
   local function dont() end
   local _update = love.update or dont
@@ -119,6 +125,7 @@ function vd.hook()
   local _resize = love.resize or dont
   local _print = print
   local _setMode = love.window.setMode
+  local _quit = love.quit or dont
   
   
   love.update = function(dt)
@@ -152,6 +159,7 @@ function vd.hook()
   love.resize = function(...) _resize(...); vd.resize(...) end
   print = function(...) if not vd.print(...) then _print(...) end end
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
+  love.quit = function(...) vd.quit(); _quit() end
 end
 
 --Internal Callbacks and such
@@ -235,9 +243,18 @@ do
 
   function vd.addWindow(win)
     if (win.hasFrame) then
-    vd.ui:addWidget(win.frame)
+      vd.ui:addWidget(win.frame)
+    end
+    table.insert(vd.windows, win)
   end
-  table.insert(vd.windows, win)
+
+  function vd.quit()
+    exportStr = "return {"
+    exportStr = exportStr .. "startHidden = " .. (vd.hidden and "true" or "false") .. ',\n'
+    exportStr = exportStr .. "showFunctions = " .. (vd.showFunctions and "true" or "false") .. ',\n'
+    exportStr = exportStr .. "showUnderscores = " .. (vd.showUnderscores and "true" or "false") .. ',\n'
+    exportStr = exportStr .. "}"
+    love.filesystem.write("vuduSettings.lua", exportStr)
   end
 end
 
@@ -272,10 +289,10 @@ function vd.setIgnore(ig, state)
   state = state == nil and true or false
   if (type(ig) == 'table') then
     for i, v in ipairs(ig) do
-      vd.ignore[v] = state
+      vd.browser.ignore[v] = state
     end
   else
-    vd.ignore[ig] = state
+    vd.browser.ignore[ig] = state
   end
 end
 

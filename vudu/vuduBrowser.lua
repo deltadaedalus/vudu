@@ -65,9 +65,10 @@ function vd.browser.bakeTable(t, context, list, depth)
   list = list or {}
   depth = depth or 0
   
+  --Associative segment of table
   for i, v in pairs(t) do if type(i) ~= 'number' and not vd.browser.ignore[context .. i] then
     local typ = type(v)
-    if not (typ == 'function' and not vd.showFunctions) then
+    if not ( (typ == 'function' and not vd.showFunctions) or (i:sub(1,1) == '_' and not vd.showUnderscores) ) then
       table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
       if typ == 'table' and vd.browser.expand[context .. i] then
         vd.browser.bakeTable(v, context .. i, list, depth+1)
@@ -75,13 +76,12 @@ function vd.browser.bakeTable(t, context, list, depth)
     end
   end end
   
+  --Indexed segment of table
   for i, v in ipairs(t) do
     local typ = type(v)
-    if not (typ == 'function' and not vd.showFunctions) then
-      table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
-      if typ == 'table' and vd.browser.expand[context .. i] then
-        vd.browser.bakeTable(v, context .. i, list, depth+1)
-      end
+    table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
+    if typ == 'table' and vd.browser.expand[context .. i] then
+      vd.browser.bakeTable(v, context .. i, list, depth+1)
     end
   end
   

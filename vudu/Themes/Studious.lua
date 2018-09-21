@@ -1,3 +1,5 @@
+--Based on VS Code's "Tomorrow Night Blue"
+
 return {
   colors_pre11 = {
     number = {255, 197, 143},

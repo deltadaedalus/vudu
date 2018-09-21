@@ -105,11 +105,11 @@ function vdUtil.drawGear(x, y, inradius, outradius, theta, teeth)
   local adif = math.pi*2/teeth
   for i = 0, teeth-1 do
     local a = theta + adif*i
-    local x0, y0 = inradius * math.cos(a), inradius * math.sin(a)
-    local x1, y1 = inradius * math.cos(a+adif/2), inradius * math.sin(a+adif/2)
-    local x2, y2 = outradius * math.cos(a+adif/2), outradius * math.sin(a+adif/2)
-    local x3, y3 = outradius * math.cos(a+adif), outradius * math.sin(a+adif)
-    local x4, y4 = inradius * math.cos(a+adif), inradius * math.sin(a+adif)
+    local x0, y0 = x + inradius * math.cos(a), y + inradius * math.sin(a)
+    local x1, y1 = x + inradius * math.cos(a+adif/2), y + inradius * math.sin(a+adif/2)
+    local x2, y2 = x + outradius * math.cos(a+adif/2), y + outradius * math.sin(a+adif/2)
+    local x3, y3 = x + outradius * math.cos(a+adif), y + outradius * math.sin(a+adif)
+    local x4, y4 = x + inradius * math.cos(a+adif), y + inradius * math.sin(a+adif)
     love.graphics.line(x0,y0,x1,y1,x2,y2,x3,y3,x4,y4)
   end
 end

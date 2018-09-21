@@ -321,7 +321,9 @@ function vdwg:setCY() return self.y + self.h/2 end
 --It passes callbacks down into its child widgets
 --
 --
-vdwg.frame = setmetatable({}, vdwg)
+vdwg.frame = setmetatable({
+  isFrame = true
+}, vdwg)
 vdwg.frame.__index = vdwg.frame
 
 function vdwg.frame.new(x, y, w, h, r, settings)
@@ -376,20 +378,32 @@ function vdwg.frame:update(dt)
 end
 
 function vdwg.frame:draw()
-  love.graphics.stencil(function() love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r) end, "replace", 1, false)
-  love.graphics.setStencilTest('equal', 1)
   love.graphics.setColor(self.idleColor)
   love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r)
   
+  love.graphics.stencil(function() love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r) end, "increment", 1, true)
+  local depth = self:getFrameDepth()
   love.graphics.push()
   love.graphics.translate(self.x + self.ox, self.y + self.oy)
   for i = #self.widgets, 1, -1 do
+    love.graphics.setStencilTest('greater', depth-1)
     love.graphics.setColor(255, 255, 255)
     self.widgets[i]:draw()
   end
   love.graphics.pop()
   
+  love.graphics.stencil(function() love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r) end, "decrement", 1, true)
   love.graphics.setStencilTest()
+end
+
+function vdwg.frame:getFrameDepth()
+  local count = 1
+  local cur = self.parent
+  while cur do
+    if cur.isFrame then count = count + 1 end
+    cur = cur.parent
+  end
+  return count
 end
 
 function vdwg.frame:addWidget(w)

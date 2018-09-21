@@ -14,6 +14,7 @@ vd.console = vdwin.new({
   y = 450, 
   w = 498, 
   h = 148,
+  minimizeType = 'bottom',
   hasFrame = true
 })
 

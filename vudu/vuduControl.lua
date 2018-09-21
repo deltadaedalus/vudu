@@ -9,6 +9,7 @@ vd.control = vdwin.new({
   y = 450, 
   w = 296, 
   h = 148,
+  minimizeType = 'bottom',
   hasFrame = true
 })
 
@@ -59,7 +60,7 @@ function vd.control:load()
   local fpsLabel = vdui.widget.text.new(180, 68, 64, 16, 6, 'FPS', {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, onResize = labelResize, unClickable = true})
 
   local timeText = vdui.widget.text.new(240, 86, 54, 16, 6, 'ye', {
-    update = function(self, dt) self.text = tostring(math.floor(vudu.timer/60)) .. ':' ..  tostring(math.floor(vudu.timer%60)) end,
+    update = function(self, dt) self.text = tostring(math.floor(vd.timer/60)) .. ':' ..  tostring(math.floor(vd.timer%60)) end,
     idleColor = vd.colors.midhighlight,
     onResize = valueResize
   })
