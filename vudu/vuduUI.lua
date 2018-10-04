@@ -406,14 +406,18 @@ function vdwg.frame:getFrameDepth()
   return count
 end
 
-function vdwg.frame:addWidget(w)
+function vdwg.frame:addWidget(w, front)
   if w.ui ~= nil and w.ui ~= self.ui then
     error("Trying to add widget cross-ui")
   end
-  table.insert(self.widgets, w)
+  if front then table.insert(self.widgets, 1, w) else table.insert(self.widgets, w) end
   if self.ui then table.insert(self.ui.all, w) end
   w.ui = self.ui
   w.parent = self
+end
+
+function vdwg.frame:addWidgetFront(w)
+  self:addWidget(w, true)
 end
 
 function vdwg.frame:removeWidget(w)

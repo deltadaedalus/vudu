@@ -114,4 +114,21 @@ function vdUtil.drawGear(x, y, inradius, outradius, theta, teeth)
   end
 end
 
+function vdUtil.autoFrameColumn(x, y, buttons)
+  local h = 2
+  local w = 0
+  for i, b in ipairs(buttons) do 
+    b.y = h + 2
+    b.x = 2
+    h = h + b.h + 2
+    w = math.max(w, b.w+4)
+  end
+
+  local frame = _vudu.vuduUI.widget.frame.new(x, y, w, h, 6)
+
+  for i, b in ipairs(buttons) do frame:addWidget(b) end
+
+  return frame
+end
+
 return vdUtil

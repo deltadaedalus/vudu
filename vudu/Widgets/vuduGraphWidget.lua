@@ -58,6 +58,8 @@ function vdw.vuduGraph:draw()
 
   love.graphics.setColor(self.lineColor)
   if (#points >= 4) then
+    love.graphics.setLineWidth(1.5)
+    love.graphics.setLineJoin("bevel")
     love.graphics.line(points)
 
     if (self.isHovered) then 

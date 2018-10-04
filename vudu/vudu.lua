@@ -321,9 +321,9 @@ function vd._addTopWidget(self, title)
   minimizer.target = self
   minimizer.savedH = 12
 
-  text = vd.vuduUI.widget.text.new(14, -2, self.w-14, 12, 6, title, {idleColor = {0,0,0,0}, unClickable = true, alignment = "right"})
+  local text = vd.vuduUI.widget.text.new(14, -2, self.w-14, 12, 6, title, {idleColor = {0,0,0,0}, unClickable = true, alignment = "right"})
 
-  dragger = vd.vuduUI.widget.new(0, 0, self.w, 12, 6, {
+  local dragger = vd.vuduUI.widget.new(0, 0, self.w, 12, 6, {
     onPress = function(self, x, y)
       self.px, self.py = love.mouse.getPosition()
       self.tx, self.ty = self.target.x, self.target.y
@@ -343,12 +343,12 @@ function vd._addTopWidget(self, title)
   frame:addWidget(text)
 end
 
-function vd.addWatchWindow(refstr)
+function vd.addWatchWindow(refstr, x, y)
+  x, y = x or 300 + math.random(-50, 50), y or 300 + math.random(-50, 50)
   local typ = type(vudu.getByName(refstr))
   local gw, gh = 96, typ == 'number' and 72 or 30
-  local panel = vd.vuduUI.widget.frame.new(300, 300, gw, gh, 6, {idleColor = vd.colors.window})
-  print(typ)
-  vd.ui:addWidget(panel)
+  local panel = vd.vuduUI.widget.frame.new(x, y, gw, gh, 6, {idleColor = vd.colors.window})
+  vd.ui:addWidgetFront(panel)
 
   if typ == 'number' then
     panel:addWidget(vd.vuduUI.widget.vuduGraph.new(2, 14, gw-4, gh-32, 6, refstr))

@@ -1,6 +1,7 @@
 local vd = require(_vdreq .. "vudu")
 local vdwin = require(_vdreq .. "vuduWindow")
 local vdui = require(_vdreq .. "vuduUI")
+local vdutil = require(_vdreq .. "vuduUtil")
 
 vd.browser = vdwin.new({
   ySpace = 16,
@@ -48,6 +49,8 @@ function vd.browser:load()
   
   vd.browser.frame:addWidget(vd.browser.browserSlider)
   vd.browser.frame:addWidget(vd.browser.browserFrame)
+
+  vd.browser._loadRightClickMenu()
 
   vd.browser.bakedContext = vd.browser.bakeTable(_G)
   vd.browser.bakeUI()
@@ -111,12 +114,13 @@ function vd.browser.addBrowserWidget(widgetDat, x, y)
   if vd.browser.widgetCache[widgetDat.ref] == nil then
     local cache = {}
     
-    local labelText = vdui.widget.text.new(x, y+1, labelLen + 12, vd.browser.ySpace-2, 6, label, {textColor = vd.colors.label})
+    local labelText = vdui.widget.text.new(x, y+1, labelLen + 12, vd.browser.ySpace-2, 6, label, {textColor = vd.colors.label, onPress = vd.browser._menuCallback})
+    labelText.target = widgetDat.ref
     table.insert(cache, labelText)
     
     if typ == 'table' then
       local expButton = vdui.widget.new(x - vd.browser.ySpace, y+1, vd.browser.ySpace-2, vd.browser.ySpace-2, vd.browser.ySpace/2-1, {
-        onRelease = vd.browser.expandCallback,
+        onRelease = vd.browser._expandCallback,
         idleColor = vd.colors.highlight
       })
       expButton.target = widgetDat.ref
@@ -144,11 +148,52 @@ function vd.browser.addBrowserWidget(widgetDat, x, y)
 end
 
 
-function vd.browser.expandCallback(self, x, y, button, isTouch)
+function vd.browser._expandCallback(self, x, y, button, isTouch)
   vd.browser.expand[self.target] = not vd.browser.expand[self.target]
   self.idleColor = vd.browser.expand[self.target] and vd.colors.lowlight or vd.colors.highlight
 end
 
+function vd.browser._menuCallback(self, x, y, button, isTouch)
+  vd.browser.rightClickMenu.target = self.target
+  vd.browser.rightClickMenu.foreFrame.x, vd.browser.rightClickMenu.foreFrame.y = love.mouse.getPosition()
+  vd.ui:addWidgetFront(vd.browser.rightClickMenu)
+end
+
+function vd.browser._loadRightClickMenu()
+  local backFrame = vdui.widget.frame.new(0, 0, vd.ui.w, vd.ui.h, 0, {
+    idleColor = {0, 0, 0, 0}, hoverColor = {0, 0, 0, 0}, pressColor = {0, 0, 0, 0}
+  })
+  
+  local backButton = vdui.widget.new(0, 0, vd.ui.w, vd.ui.h, 0, {
+    idleColor = {0, 0, 0, 0}, hoverColor = {0, 0, 0, 0}, pressColor = {0, 0, 0, 0},
+    onPress = function(self, x, y, button, isTouch)
+      vd.ui:removeWidget(vd.browser.rightClickMenu)
+      vd.ui.heldWidget = nil
+      vd.browser.rightClickMenu.unClickable = false
+    end
+  })
+
+  local watchOption = vdui.widget.text.new(0, 0, 120, 14, 6, "Watch", {
+    onRelease = function(self, x, y, button, isTouch)
+      local mx, my = love.mouse.getPosition()
+      vd.ui:removeWidget(vd.browser.rightClickMenu)
+      vd.addWatchWindow(vd.browser.rightClickMenu.target, mx - 20, my - 6)
+    end
+  })
+  local ignoreOption = vdui.widget.text.new(0, 0, 120, 14, 6, "Ignore", {
+    onRelease = function(self, x, y, button, isTouch)
+      vd.ui:removeWidget(vd.browser.rightClickMenu)
+      vd.setIgnore(vd.browser.rightClickMenu.target)
+    end,
+  })
+
+  local foreFrame = vdutil.autoFrameColumn(0, 0, {watchOption, ignoreOption})
+  backFrame.foreFrame = foreFrame
+  backFrame:addWidget(foreFrame)
+  backFrame:addWidget(backButton)
+
+  vd.browser.rightClickMenu = backFrame
+end
 
 
 
