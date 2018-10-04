@@ -9,17 +9,22 @@ vdw.vuduField.__index = vdw.vuduField
 
 function vdw.vuduField.new(x, y, w, h, r, refstr, settings)
   local refValue = vd.getByName(refstr)
+  settings = settings or {}
   local self = setmetatable(vdw.textField.new(x, y, w, h, r, tostring(refValue), settings), vdw.vuduField)
   self.refstr = refstr
   self.refType = type(refValue)
+  self.autoEval = settings.autoEval or false
+  self.fixedSize = settings.fixedSize or false
   return self
 end
 
 function vdw.vuduField:update(dt)
   if self.ui.textTarget ~= self then
-    self.text = tostring(vd.getByName(self.refstr))
+    local value = vd.getByName(self.refstr)
+    if self.autoEval and type(value) == "function" then value = value() end
+    self.text = tostring(value)
   end
-  self.w = vd.font:getWrap(tostring(self.text), 500) + 12
+  if not self.fixedSize then self.w = vd.font:getWrap(tostring(self.text), 500) + 12 end
 end
 
 function vdw.textField:onEntered()

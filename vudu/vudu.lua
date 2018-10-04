@@ -16,6 +16,7 @@ local vd = {
     highlight = {128, 96, 192, 255},
     midhighlight = {224, 224, 224, 255},
     lowlight = {128, 128, 128, 255},
+    dark = {96, 96, 96, 255},
     --
     buttonIdle = {192, 192, 192, 255},
     buttonHover = {200, 200, 200, 255},
@@ -40,6 +41,7 @@ local vd = {
     highlight = {1/2, 3/8, 3/4},
     midhighlight = {7/8, 7/8, 7/8},
     lowlight = {1/2, 1/2, 1/2},
+    dark = {3/8, 3/8, 3/8, 255},
     --
     buttonIdle = {3/4, 3/4, 3/4},
     buttonHover = {25/32, 25/32, 25/32},
@@ -56,6 +58,7 @@ local vd = {
   pauseType = "Play",
   hidden = false, --is the vudu ui hidden
   timer = 0,      --The total time passed accroding to vudu (i.e. real time)
+  gameTimer = 0,  --The total time passed in-game, respectful to fast-forward and slow motion
   path = _vdpath,
   showSettings = false,
 }
@@ -84,11 +87,12 @@ function vd.initialize(settings)
 
   vd.hook()
   for i, win in ipairs(vd.windows) do win:load() end
-  vd.initSettingsUI()
+  vd._initSettingsUI()
   vd.resize(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
-function vd.initSettingsUI()
+--Creates the settings button
+function vd._initSettingsUI()
   local settingsButton = vd.vuduUI.widget.new(778, 2, 20, 20, 6, {
     idleColor = vd.colors.highlight,
     onResize = function(self) self:gravR(2) end,
@@ -98,13 +102,14 @@ function vd.initSettingsUI()
     onResize = function(self) self:setY(24); self:gravR(2); self:setH(#self.widgets*9+2) end, 
     idleColor = vd.colors.window
   })
-  vd.addSettingsOption(vd.settingsFrame, "Show Functions", "_vudu.showFunctions", 150, 2)
-  vd.addSettingsOption(vd.settingsFrame, "Show Underscores", "_vudu.showUnderscores", 150, 18)
+  vd._addSettingsOption(vd.settingsFrame, "Show Functions", "_vudu.showFunctions", 150, 2)
+  vd._addSettingsOption(vd.settingsFrame, "Show Underscores", "_vudu.showUnderscores", 150, 18)
 
   vd.ui:addWidget(settingsButton)
 end
 
-function vd.addSettingsOption(frame, label, ref, x, y)
+--Adds a toggle button to the settings frame
+function vd._addSettingsOption(frame, label, ref, x, y)
   local button = vd.vuduUI.widget.checkBox.new(x-17, y+1, 14, 14, 6, {targetRef = ref})
   local label = vd.vuduUI.widget.text.new(x-166, y, 150, 16, 6, label, {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, unClickable = true})
   frame:addWidget(button)
@@ -166,6 +171,7 @@ end
 do
   function vd.update(dt)
     vd.timer = vd.timer + dt
+    vd.gameTimer = vd.gameTimer + (vd.paused and 0 or dt*(2^vd.timeScale))
     vd.ui:update(dt)
     for i, win in ipairs(vd.windows) do win:update(dt) end
   end
@@ -300,6 +306,55 @@ function vd.setTheme(path)
   local theme = love.filesystem.load(path)()
   for i, v in pairs(theme.colors) do vdUtil.copyColor(theme.colors[i], vd.colors[i]) end
   for i, v in pairs(theme.colors_pre11) do vdUtil.copyColor(theme.colors_pre11[i], vd.colors_pre11[i]) end
+end
+
+--Adds top widget for watch windows
+function vd._addTopWidget(self, title)
+  local frame = vd.vuduUI.widget.frame.new(0, 0, self.w, 12, 6, {onResize = function(self) self.w = self.parent.w end})
+  frame.idleColor = vd.colors.highlight
+  self:addWidget(frame)
+  local minimizer = vd.vuduUI.widget.new(0, 0, 12, 12, 6, {
+    onRelease = function(self)
+      self.target.parent:removeWidget(self.target)
+    end
+  })
+  minimizer.target = self
+  minimizer.savedH = 12
+
+  text = vd.vuduUI.widget.text.new(14, -2, self.w-14, 12, 6, title, {idleColor = {0,0,0,0}, unClickable = true, alignment = "right"})
+
+  dragger = vd.vuduUI.widget.new(0, 0, self.w, 12, 6, {
+    onPress = function(self, x, y)
+      self.px, self.py = love.mouse.getPosition()
+      self.tx, self.ty = self.target.x, self.target.y
+    end,
+    whileHeld = function(self, x, y, dt)
+      local mx, my = love.mouse.getPosition()
+      self.target.x, self.target.y = self.tx + (mx-self.px), self.ty + (my-self.py)
+    end,
+    idleColor = {0,0,0,0},
+    hoverColor = {0,0,0,0},
+    pressColor = {0,0,0,0},
+  })
+  dragger.target = self
+
+  frame:addWidget(minimizer)
+  frame:addWidget(dragger)
+  frame:addWidget(text)
+end
+
+function vd.addWatchWindow(refstr)
+  local typ = type(vudu.getByName(refstr))
+  local gw, gh = 96, typ == 'number' and 72 or 30
+  local panel = vd.vuduUI.widget.frame.new(300, 300, gw, gh, 6, {idleColor = vd.colors.window})
+  print(typ)
+  vd.ui:addWidget(panel)
+
+  if typ == 'number' then
+    panel:addWidget(vd.vuduUI.widget.vuduGraph.new(2, 14, gw-4, gh-32, 6, refstr))
+  end
+  panel:addWidget(vd.vuduUI.widget.vuduField.new(2, gh-16, gw-4, 14, 6, refstr, {autoEval = true, fixedSize = true, idleColor = vudu.colors.lowLight}))
+  vudu._addTopWidget(panel, refstr)
 end
 
 return vd

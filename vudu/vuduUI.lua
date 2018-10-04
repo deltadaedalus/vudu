@@ -87,7 +87,7 @@ function vdui:mousereleased(x, y, button, isTouch)
   else
     for i, w in ipairs(self.widgets) do
       if (not w.unClickable) and w:checkContains(x, y) then
-        w:onRelease(x - self.heldWidget.x, y - self.heldWidget.y, button, isTouch)
+        w:onRelease(x - w.x, y - w.y, button, isTouch)
         break;
       end
     end
@@ -437,6 +437,7 @@ function vdwg.frame:whileHovered(x, y, dt)
   if self.hoverWidget and not self.hoverWidget:checkContains(x-self.ox, y-self.oy) then
     self.hoverWidget:changeColor(self.hoverWidget.idleColor, vdui.hoverFade)
     self.hoverWidget:onUnHover()
+    self.hoverWidget.isHovered = false
     self.hoverWidget = nil
   end
 
@@ -445,9 +446,11 @@ function vdwg.frame:whileHovered(x, y, dt)
       if self.hoverWidget then
         self.hoverWidget:changeColor(self.hoverWidget.idleColor, vdui.hoverFade)
         self.hoverWidget:onUnHover()
+        self.hoverWidget.isHovered = false
       end
       w:changeColor(w.hoverColor, vdui.hoverFade)
       w:onHover()
+      w.isHovered = true
       self.hoverWidget = w
       break;
     end
@@ -459,6 +462,7 @@ end
 function vdwg.frame:onUnHover()
   if self.hoverWidget then
     self.hoverWidget:onUnHover()
+    self.hoverWidget.isHovered = false
     self.hoverWidget = nil
   end
 end
