@@ -167,7 +167,7 @@ end
 local vdwg = {
   idleColor = _vudu.colors.buttonIdle,
   hoverColor = _vudu.colors.buttonHover,
-  pressColor = _vudu.colors.buttonPress,
+  pressColor = _vudu.colors.buttonPress
 }
 vdwg.__index = vdwg
 
@@ -230,9 +230,17 @@ function vdwg:getColor()
 end
 
 function vdwg:draw()
-  love.graphics.setColor(self:getColor())
-  if (self.image) then love.graphics.draw(self.image, self.x, self.y)
-  else love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, self.r)
+  local color = self:getColor()
+  if (self.image) then
+    love.graphics.setColor(love._version_major >= 11 and {0, 0, 0, color[4] == 0 and 0 or 1/16} or {0, 0, 0, color[4] == 0 and 0 or 16})
+    love.graphics.rectangle("fill", self.x-1, self.y+2, self.w, self.h, self.r)
+    love.graphics.setColor(color)
+    love.graphics.draw(self.image, self.x, self.y)
+  else 
+    love.graphics.setColor(love._version_major >= 11 and {0, 0, 0, color[4] == 0 and 0 or 1/16} or {0, 0, 0, color[4] == 0 and 0 or 16})
+    love.graphics.rectangle("fill", self.x-1, self.y+2, self.w, self.h, self.r)
+    love.graphics.setColor(color)
+    love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, self.r)
   end
 end
 
@@ -378,6 +386,8 @@ function vdwg.frame:update(dt)
 end
 
 function vdwg.frame:draw()
+  love.graphics.setColor(love._version_major >= 11 and {0, 0, 0, self.idleColor[4] == 0 and 0 or 1/16} or {0, 0, 0, self.idleColor[4] == 0 and 0 or 16})
+  love.graphics.rectangle("fill", self.x-1, self.y+2, self.w, self.h, self.r)
   love.graphics.setColor(self.idleColor)
   love.graphics.rectangle('fill', self.x, self.y, self.w, self.h, self.r)
   

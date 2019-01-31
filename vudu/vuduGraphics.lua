@@ -103,6 +103,13 @@ function vd.graphics.drawText(color, duration, x, y, text)
   self.text = text
 end
 
+function vd.graphics.drawPing(color, duration, x, y, r)
+  local self = vd.graphics.afterImage.new(color, duration, vd.graphics._drawPing)
+  self.x = x
+  self.y = y
+  self.r = r or 10
+end
+
 
 
 
@@ -119,14 +126,14 @@ end
 --self.points
 function vd.graphics._drawLine(self)
   self:setColor()
-  love.graphics.setLineWidth(self.w)
+  love.graphics.setLineWidth(self.w * vd.camera.z)
   love.graphics.line(self.sx, self.sy, self.ex, self.ey)
 end
 
 --self.r
 function vd.graphics._drawCircle(self)
   self:setColor()
-  love.graphics.setLineWidth(self.w)
+  love.graphics.setLineWidth(self.w * vd.camera.z)
   love.graphics.circle('line', self.x, self.y, self.r)
 end
 
@@ -135,6 +142,40 @@ end
 function vd.graphics._drawText(self)
   self:setColor()
   love.graphics.print(self.text, self.x, self.y)
+end
+
+--self.x, self.y, self.r
+function vd.graphics._drawPing(self)
+  self:setColor()
+  love.graphics.setLineWidth(2 * vd.camera.z)
+
+  local tx, ty = love.graphics.transformPoint(self.x, self.y)
+  local r1 = ((vd.timer * 10) % 5) * vd.camera.z * self.r/5
+  local r2 = (math.max(vd.timer * 10 - 2.5, 0) % 5) * vd.camera.z * self.r/5
+  local w, h = love.graphics.getWidth(), love.graphics.getHeight()
+  local cx, cy = w/2, h/2
+  local dx, dy = tx - cx, ty - cy
+  local absSlope = math.abs(dy/dx)
+  local screenSlope = h/w
+
+  if tx > 0 and tx < w and ty > 0 and ty < h then
+    love.graphics.circle("line", self.x, self.y, r1)
+    love.graphics.circle("line", self.x, self.y, r2)
+  else
+    local scale = 0
+    if      dy < 0  and absSlope >  screenSlope then
+      scale = -h/2 / dy
+    elseif  dy >= 0 and absSlope >  screenSlope then
+      scale = h/2 / dy
+    elseif  dx < 0  and absSlope <= screenSlope then
+      scale = -w/2 / dx
+    elseif  dx >= 0 and absSlope <= screenSlope then
+      scale = w/2 / dx
+    end
+    local rx, ry = love.graphics.inverseTransformPoint(cx + dx * scale, cy + dy * scale)
+    love.graphics.circle("line", rx, ry, r1)
+    love.graphics.circle("line", rx, ry, r2)
+  end
 end
 
 return vd.graphics

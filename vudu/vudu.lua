@@ -61,6 +61,7 @@ local vd = {
   gameTimer = 0,  --The total time passed in-game, respectful to fast-forward and slow motion
   path = _vdpath,
   showSettings = false,
+  camera = {x = 0, y = 0, r = 0, z = 1, transform = love.math.newTransform()},
 }
 
 vd.colors = love._version_major >= 11 and vd.colors or vd.colors_pre11
@@ -89,6 +90,33 @@ function vd.initialize(settings)
   for i, win in ipairs(vd.windows) do win:load() end
   vd._initSettingsUI()
   vd.resize(love.graphics.getWidth(), love.graphics.getHeight())
+
+  vd.camera.x = love.graphics.getWidth()/2
+  vd.camera.y = love.graphics.getHeight()/2
+end
+
+function vd.initializeDefaultHotkeys(mod)
+  mod = mod or 'lalt'
+  --Pause/Play
+  vd.hotkey.addSequence({mod, 'space'}, function() vd.control.setPauseType(vd.paused and "Play" or "Zero") end)
+  vd.hotkey.addSequence({mod, 'p'}, function() vd.control.setPauseType("Zero") end)
+  vd.hotkey.addSequence({mod, 'lshift', 'p'}, function() vd.control.setPauseType("Stop") end)
+  vd.hotkey.addSequence({mod, '1'}, function() vd.control.setPauseType("Stop"); vd.advanceSingleFrame() end)
+
+  --Speed
+  vd.hotkey.addSequence({mod, ','}, function() vd.timeScale = vd.timeScale - 1 end)
+  vd.hotkey.addSequence({mod, '.'}, function() vd.timeScale = vd.timeScale + 1 end)
+  vd.hotkey.addSequence({mod, '/'}, function() vd.timeScale = 0 end)
+
+  --Camera
+  vd.hotkey.addSequence({mod, 'left'}, function() vd.camera.x = vd.camera.x - love.graphics.getWidth() * 0.25 * vd.camera.z; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, 'right'}, function() vd.camera.x = vd.camera.x + love.graphics.getWidth() * 0.25 * vd.camera.z; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, 'up'}, function() vd.camera.y = vd.camera.y - love.graphics.getHeight() * 0.25 * vd.camera.z; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, 'down'}, function() vd.camera.y = vd.camera.y + love.graphics.getHeight() * 0.25 * vd.camera.z; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, '-'}, function() vd.camera.z = vd.camera.z * 1.25; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, '='}, function() vd.camera.z = vd.camera.z / 1.25; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, 'left', 'right'}, function() vd.camera.z = 1; vd.camera.x = love.graphics.getWidth()/2; vd.camera.y = love.graphics.getHeight()/2; vd._refreshCameraTransform() end)
+  vd.hotkey.addSequence({mod, 'right', 'left'}, function() vd.camera.z = 1; vd.camera.x = love.graphics.getWidth()/2; vd.camera.y = love.graphics.getHeight()/2; vd._refreshCameraTransform() end)
 end
 
 --Creates the settings button
@@ -131,6 +159,10 @@ function vd.hook()
   local _print = print
   local _setMode = love.window.setMode
   local _quit = love.quit or dont
+  vd._oldOrigin = love.graphics.origin
+
+  vd._update = _update
+  vd._draw = _draw
   
   
   love.update = function(dt)
@@ -139,6 +171,7 @@ function vd.hook()
     end
     vd.update(dt)
   end
+
   love.draw = function()
     if vd.pauseType ~= "Freeze" then
       _draw()
@@ -149,12 +182,12 @@ function vd.hook()
     if vd.capFrame then
       _draw()
       love.graphics.captureScreenshot(function (id) _vudu.frozenFrame = love.graphics.newImage(id) end)
-      --love.graphics.captureScreenshot(os.time() .. 'screen.png')
       vd.capFrame = nil
     else
       vd.draw()
     end
   end
+
   love.mousepressed = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _mousepressed(...) end; vd.mousepressed(...) end
   love.mousereleased = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _mousereleased(...) end; vd.mousereleased(...) end
   love.keypressed = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _keypressed(...) end; vd.keypressed(...) end
@@ -165,6 +198,7 @@ function vd.hook()
   print = function(...) if not vd.print(...) then _print(...) end end
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
   love.quit = function(...) vd.quit(); _quit() end
+  love.graphics.origin = function() vd._oldOrigin(); vd.origin() end
 end
 
 --Internal Callbacks and such
@@ -177,7 +211,7 @@ do
   end
 
   function vd.draw()
-    love.graphics.origin()
+    vd._oldOrigin()
     for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then
       win:draw()
     end end
@@ -262,9 +296,13 @@ do
     exportStr = exportStr .. "}"
     love.filesystem.write("vuduSettings.lua", exportStr)
   end
+
+  function vd.origin() 
+    love.graphics.applyTransform(vd.camera.transform)
+  end
+
 end
 
---API
 function vd.getByName(refstr, env)
   local cur = env or _G
   if refstr == '' then return cur end
@@ -355,6 +393,30 @@ function vd.addWatchWindow(refstr, x, y)
   end
   panel:addWidget(vd.vuduUI.widget.vuduField.new(2, gh-16, gw-4, 14, 6, refstr, {autoEval = true, fixedSize = true, idleColor = vudu.colors.lowLight}))
   vudu._addTopWidget(panel, refstr)
+end
+
+function vd.setCamera(x, y, z, r)
+  vd.camera.x = x or vd.camera.x 
+  vd.camera.y = y or vd.camera.y 
+  vd.camera.z = z or vd.camera.z
+  vd.camera.r = r or vd.camera.r 
+  vd._refreshCameraTransform()
+end
+
+function vd._refreshCameraTransform()
+  local baseTransform = love.math.newTransform(-vd.camera.x / vd.camera.z, -vd.camera.y / vd.camera.z, 0, 1/vd.camera.z)
+  local rotateCenter = love.math.newTransform(0, 0, vd.camera.r)
+  local addCenter = love.math.newTransform(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+  --local subCenter = love.math.newTransform(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
+  addCenter:apply(rotateCenter)
+  addCenter:apply(baseTransform)
+  --addCenter:apply(subCenter)
+  vd.camera.transform = addCenter
+end
+
+function vd.advanceSingleFrame(dt)
+  vd._update(love.timer.getDelta() * 2^vd.timeScale)
+  vd._draw()
 end
 
 return vd

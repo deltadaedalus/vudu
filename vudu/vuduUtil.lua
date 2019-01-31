@@ -88,7 +88,7 @@ function vdUtil.dottedLine(ofs, fill, gap, points)
     local dist = math.sqrt((x2-x1)^2 + (y2-y1)^2)
     local j = 0
     while jump < dist and j < 100 do
-      xn, yn = vdUtil.lerp(x1, y1, x2, y2, jump/dist)
+      local xn, yn = vdUtil.lerp(x1, y1, x2, y2, jump/dist)
       if (draw) then love.graphics.line(x1, y1, xn, yn) end
       x1, y1 = xn, yn
       dist = math.sqrt((x2-x1)^2 + (y2-y1)^2)

@@ -32,17 +32,20 @@ Press **`** to show/hide the vudu GUI.
 
 In the top right is a small button, pressing this will open a dropdown with a few settings, currently these settings only filter what variables are shown in the browser
 
-On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.  To edit a bool, simply click it to flip its value.  Sometimes values push their way out of range of the browser, to see these values you can scroll left/right with shift+scrollwheel
+On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.  To edit a bool, simply click it to flip its value.  Sometimes values push their way out of range of the browser, to see these values you can scroll left/right with shift+scrollwheel.
+
+By right clicking the name of a value in the browser, you can either ignore (remove from the browser) that value, or create a watch window for it.
 
 On the bottom right of the screen is the **Console**, it allows you to enter lua code to be interpreted and run.  The output of this code (or any error in its compilation) is shown in the console.  The output of `print()` is also shown in the console.  You can click a bubble in the console output to copy it to your clipboard.  When typing in the console, autofill options will appear, and you can press `tab` to autofill with the lowest option on the list.
 
-On the bottom left of the screen is the **Controller**, the speed of execution can be adjusted with the slider, and the game can be switched between running, paused with 0dt updates, and paused without updates.
+On the bottom left of the screen is the **Controller**, the speed of execution can be adjusted with the slider, and the game can be switched between running, paused with 0dt updates, and paused without updates.  The camera can also be moved and zoomed, to get a look at things being rendered off-screen, or to zoom in on small details.
 
 In the top right corner of the screen is the settings menu, under which you can find the following settings to tailor your vudu experience:
 
 | Name | Purpose |
 | ---- | ------- |
 | `Show Functions` | Determines whether or not function values are shown in the browser. |
+| `Show Underscores` | Determines whether or not variables starting with an '_' are shown in the browser. |
 
 ### Hotkeys
 
@@ -56,6 +59,25 @@ function love.load()
   vudu.hotkey.addSequence({'lctrl', 'lalt', 'r'}, function() vudu.control.setPauseType("Zero") end)
 end
 ```
+
+You can call ```vudu.initializeDefaultHotkeys``` to enable the following set of hotkeys:
+*lalt can be replaced with any other specific modifier key you like by passing its keycode to initializeDefaultHotkeys*
+| Sequence | Action |
+| -------- | ------ |
+| `lalt + space` | Toggle between 0dt Pause and Playing |
+| `lalt + p` | 0dt Pause |
+| `lalt + lshift + p` | No-Update Pause |
+| `lalt + 1` | Advance 1 Frame |
+| -------- | ------ |
+| `lalt + ,` | Slow down the game |
+| `lalt + .` | Speed up the game |
+| `lalt + /` | Reset game speed |
+| -------- | ------ |
+| `lalt + [Arrow Key]` | Move the Camera in the specified direction |
+| `lalt + -` | Zoom Out |
+| `lalt + =` | Zoom In |
+| `lalt + left + right` | Reset Camera |
+
 
 ### Graphics
 
@@ -96,6 +118,7 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 | `vudu.graphics.drawLine(color, duration, sx, sy, ex, ey, [w])` | draws a line from `sx, sy` to `ex, ey` with width `w` |
 | `vudu.graphics.drawCircle(color, duration, x, y, r, [w])` | draws a circle with radius `r` around the point `x, y`, with edge width `w` |
 | `vudu.graphics.drawText(color, duration, x, y, text)` | prints `text` at position `x, y`|
+| `vudu.graphics.drawPing(color, duration, x, y, r)` | draws an attention-grabbing animation with size `r` at `x, y`
 
 This list is not exhaustive, there is more functionality which is currently internal, but will be exposed down the line.
 
