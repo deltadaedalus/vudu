@@ -62,17 +62,16 @@ end
 
 You can call ```vudu.initializeDefaultHotkeys``` to enable the following set of hotkeys:
 *lalt can be replaced with any other specific modifier key you like by passing its keycode to initializeDefaultHotkeys*
+
 | Sequence | Action |
 | -------- | ------ |
 | `lalt + space` | Toggle between 0dt Pause and Playing |
 | `lalt + p` | 0dt Pause |
 | `lalt + lshift + p` | No-Update Pause |
 | `lalt + 1` | Advance 1 Frame |
-| -------- | ------ |
 | `lalt + ,` | Slow down the game |
 | `lalt + .` | Speed up the game |
 | `lalt + /` | Reset game speed |
-| -------- | ------ |
 | `lalt + [Arrow Key]` | Move the Camera in the specified direction |
 | `lalt + -` | Zoom Out |
 | `lalt + =` | Zoom In |
