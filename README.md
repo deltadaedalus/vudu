@@ -61,6 +61,7 @@ end
 ```
 
 You can call ```vudu.initializeDefaultHotkeys``` to enable the following set of hotkeys:
+
 *lalt can be replaced with any other specific modifier key you like by passing its keycode to initializeDefaultHotkeys*
 
 | Sequence | Action |
