@@ -46,7 +46,7 @@ function vdw.textField:textinput(text)
 end
 
 function vdw.textField:keypressed(key, scancode, isrepeat)
-  if key == 'return' then
+  if key == 'return' or key == 'kpenter' then
     self:onEntered()
   elseif key == 'left' then
     self.cursor = math.max(0, self.cursor-1)

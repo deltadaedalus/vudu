@@ -70,23 +70,23 @@ function vd.control:load()
   --pause mode buttons
   local playButton = vdui.widget.new(2, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Play", 1) end,
-    image = love.graphics.newImage(vd.path .. "Images/Play.png")})
+    image = love.graphics.newImage(vd.path .. "images/play.png")})
 
   local zeroButton = vdui.widget.new(52, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Zero", 2) end,
-    image = love.graphics.newImage(vd.path .. "Images/Pause.png")})
+    image = love.graphics.newImage(vd.path .. "images/pause.png")})
   
   local stopButton = vdui.widget.new(102, 46, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Stop", 3) end,
-    image = love.graphics.newImage(vd.path .. "Images/Stop.png")})
+    image = love.graphics.newImage(vd.path .. "images/stop.png")})
 
   local freezeButton = vdui.widget.new(2, 96, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Freeze", 4) end,
-    image = love.graphics.newImage(vd.path .. "Images/Freeze.png")})
+    image = love.graphics.newImage(vd.path .. "images/freeze.png")})
 
   local advanceButton = vdui.widget.new(102, 96, 48, 48, 12,
     {onRelease = function() vd.control.setPauseType("Stop", 5); vd.advanceSingleFrame() end,
-    image = love.graphics.newImage(vd.path .. "Images/Frame.png")})
+    image = love.graphics.newImage(vd.path .. "images/frame.png")})
   
   vd.control.pauseButtons = {playButton, zeroButton, stopButton, freezeButton, advanceButton}
 
@@ -99,31 +99,31 @@ function vd.control:load()
 
   local leftButton = vdui.widget.new(5, 10, 15, 20, 6, {
     whileHeld = function(self, dt) vd.camera.x = vd.camera.x - dt*cameraSpeed * vd.camera.z; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/LeftArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/leftarrow.png")
   })
   local rightButton = vdui.widget.new(40, 10, 15, 20, 6, {
     whileHeld = function(self, dt) vd.camera.x = vd.camera.x + dt*cameraSpeed * vd.camera.z; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/RightArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/rightarrow.png")
   })
   local upButton = vdui.widget.new(20, 5, 20, 15, 6, {
     whileHeld = function(self, dt) vd.camera.y = vd.camera.y - dt*cameraSpeed * vd.camera.z; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/UpArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/uparrow.png")
   })
   local downButton = vdui.widget.new(20, 20, 20, 15, 6, {
     whileHeld = function(self, dt) vd.camera.y = vd.camera.y + dt*cameraSpeed * vd.camera.z; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/DownArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/downarrow.png")
   })
   local outButton = vdui.widget.new(55, 20, 20, 15, 6, {
     whileHeld = function(self, dt) vd.camera.z = vd.camera.z * dt^zoomSpeed; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/OutArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/outarrow.png")
   })
   local inButton = vdui.widget.new(55, 5, 20, 15, 6, {
     whileHeld = function(self, dt) vd.camera.z = vd.camera.z / dt^zoomSpeed; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/InArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/inarrow.png")
   })
   local resetButton = vdui.widget.new(75, 10, 20, 20, 6, {
     onRelease = function(self) vd.camera.x = love.graphics.getWidth()/2; vd.camera.y = love.graphics.getHeight()/2; vd.camera.z = 1; vd._refreshCameraTransform() end,
-    image = love.graphics.newImage(vd.path .. "Images/ResetArrow.png")
+    image = love.graphics.newImage(vd.path .. "images/resetarrow.png")
   })
 
   cameraFrame:addWidget(resetButton)

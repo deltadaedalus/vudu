@@ -195,6 +195,7 @@ function vd.hook()
   love.wheelmoved = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _wheelmoved(...) end; vd.wheelmoved(...) end
   love.textinput = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _textinput(...) end; vd.textinput(...) end
   love.resize = function(...) _resize(...); vd.resize(...) end
+  oldprint = _print
   print = function(...) if not vd.print(...) then _print(...) end end
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
   love.quit = function(...) vd.quit(); _quit() end
@@ -273,9 +274,10 @@ do
     end
   end
 
-  function vd.print(str)
+  function vd.print(...)
     if (vd.console) then
-      vd.console.addToHistory(str, true)
+      vd.console.addToHistory(..., true)
+      oldprint(...)
       return true
     end
     return false

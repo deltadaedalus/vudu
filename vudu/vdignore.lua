@@ -40,5 +40,7 @@ return {
   ["getmetatable"] = true,
   ["getfenv"] = true,
   ["arg"] = true,
-  ["_vudu"] = true
+  ["_vudu"] = true,
+  ["love"] = true,
+  ["vudu"] = true
 }
