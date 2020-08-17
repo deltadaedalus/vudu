@@ -1,9 +1,0 @@
-You may use, modify, and redistribute this source code in any way you like, given that you satisfy the following conditions in doing so:
-  1: You do not inaccurately represent any portion of this original source code as having been your original work, or anybody's original work 
-    but its original creator's
-  2: You do not utilize this code, any snippets of this code, any derivatives of this source code, or any product produced with the help of this 
-    source code or its functionality, in any activity which enables the creation of weaponry to be used against the homeland of the United States.  
-    I like it here.
-
-The shittiness of your own code, and any potentially shitty results thereof, are not to, in any way, be attributed to the original creator of 
-this source code.  
