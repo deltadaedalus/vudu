@@ -1,7 +1,7 @@
 local vd = require(_vdreq .. "vudu")
-local vdui = require(_vdreq .. "vuduUI")
+local vdui = require(_vdreq .. "vuduui")
 local vdw = vdui.widget
-local vdUtil = require(_vdreq .. "vuduUtil")
+local vdUtil = require(_vdreq .. "vuduutil")
 
 vdw.slider = setmetatable({}, vdw)
 vdw.slider.__index = vdw.slider

@@ -1,5 +1,5 @@
 local vd = require(_vdreq .. "vudu")
-local vdui = require(_vdreq .. "vuduUI")
+local vdui = require(_vdreq .. "vuduui")
 local vdw = vdui.widget
 
 vdw.text = setmetatable({}, vdw)

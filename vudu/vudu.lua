@@ -1,4 +1,4 @@
-local vdUtil = require(_vdreq .. "vuduUtil")
+local vdUtil = require(_vdreq .. "vuduutil")
 
 local vd = {
   _version = '0.1.1',
@@ -67,7 +67,7 @@ local vd = {
 vd.colors = love._version_major >= 11 and vd.colors or vd.colors_pre11
 _G._vudu = vd
 
-vd.vuduUI = require(_vdreq .. "vuduUI")
+vd.vuduUI = require(_vdreq .. "vuduui")
 vd.ui = vd.vuduUI.new()
 
 vd.defaultSettings = {
@@ -138,6 +138,8 @@ end
 
 --Adds a toggle button to the settings frame
 function vd._addSettingsOption(frame, label, ref, x, y)
+
+
   local button = vd.vuduUI.widget.checkBox.new(x-17, y+1, 14, 14, 6, {targetRef = ref})
   local label = vd.vuduUI.widget.text.new(x-166, y, 150, 16, 6, label, {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, unClickable = true})
   frame:addWidget(button)
