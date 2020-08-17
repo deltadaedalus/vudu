@@ -51,7 +51,7 @@ local vd = {
     consoleResponse = {7/8, 29/32, 15/16},
     consoleError = {15/16, 7/8, 29/32},
   },
-  font = love.graphics.newFont(_vdpath .. "Inconsolata-Regular.ttf", 14),
+  font = love.graphics.newFont(_vdpath .. "inconsolata-regular.ttf", 14),
   windows = {},
   timeScale = 0,  --The log2 of the speed at which the game plays
   paused = false, --is the game paused
@@ -76,7 +76,7 @@ vd.defaultSettings = {
   showUnderscores = false,
 }
 
-vd.savedSettings = love.filesystem.load("vuduSettings.lua")
+vd.savedSettings = love.filesystem.load("vudusettings.lua")
 
 --To be called from love.load, does what it says on the tin
 function vd.initialize(settings)
@@ -298,7 +298,7 @@ do
     exportStr = exportStr .. "showFunctions = " .. (vd.showFunctions and "true" or "false") .. ',\n'
     exportStr = exportStr .. "showUnderscores = " .. (vd.showUnderscores and "true" or "false") .. ',\n'
     exportStr = exportStr .. "}"
-    love.filesystem.write("vuduSettings.lua", exportStr)
+    love.filesystem.write("vudusettings.lua", exportStr)
   end
 
   function vd.origin() 

@@ -3,7 +3,7 @@ local vdui = require(_vdreq .. "vuduui")
 local vdUtil = require(_vdreq .. "vuduutil")
 local vdw = vdui.widget
 
-require(_vdreq .."Widgets/TextWidget")
+require(_vdreq .."widgets/textwidget")
 
 vdw.textField = setmetatable({}, vdw.text)
 vdw.textField.__index = vdw.textField
