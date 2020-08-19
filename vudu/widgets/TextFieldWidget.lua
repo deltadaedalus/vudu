@@ -1,9 +1,9 @@
 local vd = require(_vdreq .. "vudu")
-local vdui = require(_vdreq .. "vuduUI")
-local vdUtil = require(_vdreq .. "vuduUtil")
+local vdui = require(_vdreq .. "vuduui")
+local vdUtil = require(_vdreq .. "vuduutil")
 local vdw = vdui.widget
 
-require(_vdreq .."Widgets/TextWidget")
+require(_vdreq .."widgets/textwidget")
 
 vdw.textField = setmetatable({}, vdw.text)
 vdw.textField.__index = vdw.textField
@@ -46,7 +46,7 @@ function vdw.textField:textinput(text)
 end
 
 function vdw.textField:keypressed(key, scancode, isrepeat)
-  if key == 'return' then
+  if key == 'return' or key == 'kpenter' then
     self:onEntered()
   elseif key == 'left' then
     self.cursor = math.max(0, self.cursor-1)

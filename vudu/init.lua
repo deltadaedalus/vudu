@@ -3,19 +3,19 @@ _vdreq = path
 _vdpath = string.gsub(path, "%.", "/")
 local vd = require (path .. "vudu")
 
-require (path .. "Widgets.SliderWidget")
-require (path .. "Widgets.TextWidget")
-require (path .. "Widgets.TextFieldWidget")
-require (path .. "Widgets.vuduFieldWidget")
-require (path .. "Widgets.CheckboxWidget")
-require (path .. "Widgets.vuduGraphWidget")
+require (path .. "widgets/sliderwidget")
+require (path .. "widgets/textwidget")
+require (path .. "widgets/textfieldwidget")
+require (path .. "widgets/vudufieldwidget")
+require (path .. "widgets/checkboxwidget")
+require (path .. "widgets/vudugraphwidget")
 
-vd.addWindow(require(path .. "vuduConsole"))
-vd.addWindow(require(path .. "vuduBrowser"))
-vd.addWindow(require(path .. "vuduControl"))
-vd.addWindow(require(path .. "vuduPhysics"))
-vd.addWindow(require(path .. "vuduGraphics"))
-vd.addWindow(require(path .. "vuduHotkey"))
+vd.addWindow(require(path .. "vuduconsole"))
+vd.addWindow(require(path .. "vudubrowser"))
+vd.addWindow(require(path .. "vuducontrol"))
+vd.addWindow(require(path .. "vuduphysics"))
+vd.addWindow(require(path .. "vudugraphics"))
+vd.addWindow(require(path .. "vuduhotkey"))
 
 _vdpath = nil
 _vdreq = nil

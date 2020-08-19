@@ -1,5 +1,5 @@
 local vd = require(_vdreq .. "vudu")
-local vdwin = require(_vdreq .. "vuduWindow")
+local vdwin = require(_vdreq .. "vuduwindow")
 
 vd.hotkey = vdwin.new({
   sequences = {},

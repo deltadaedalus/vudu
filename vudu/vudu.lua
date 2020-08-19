@@ -1,4 +1,4 @@
-local vdUtil = require(_vdreq .. "vuduUtil")
+local vdUtil = require(_vdreq .. "vuduutil")
 
 local vd = {
   _version = '0.1.1',
@@ -51,7 +51,7 @@ local vd = {
     consoleResponse = {7/8, 29/32, 15/16},
     consoleError = {15/16, 7/8, 29/32},
   },
-  font = love.graphics.newFont(_vdpath .. "Inconsolata-Regular.ttf", 14),
+  font = love.graphics.newFont(_vdpath .. "inconsolata-regular.ttf", 14),
   windows = {},
   timeScale = 0,  --The log2 of the speed at which the game plays
   paused = false, --is the game paused
@@ -67,7 +67,7 @@ local vd = {
 vd.colors = love._version_major >= 11 and vd.colors or vd.colors_pre11
 _G._vudu = vd
 
-vd.vuduUI = require(_vdreq .. "vuduUI")
+vd.vuduUI = require(_vdreq .. "vuduui")
 vd.ui = vd.vuduUI.new()
 
 vd.defaultSettings = {
@@ -76,7 +76,7 @@ vd.defaultSettings = {
   showUnderscores = false,
 }
 
-vd.savedSettings = love.filesystem.load("vuduSettings.lua")
+vd.savedSettings = love.filesystem.load("vudusettings.lua")
 
 --To be called from love.load, does what it says on the tin
 function vd.initialize(settings)
@@ -138,6 +138,8 @@ end
 
 --Adds a toggle button to the settings frame
 function vd._addSettingsOption(frame, label, ref, x, y)
+
+
   local button = vd.vuduUI.widget.checkBox.new(x-17, y+1, 14, 14, 6, {targetRef = ref})
   local label = vd.vuduUI.widget.text.new(x-166, y, 150, 16, 6, label, {alignment = 'right', idleColor = {0,0,0,0}, textColor = vd.colors.label, unClickable = true})
   frame:addWidget(button)
@@ -195,6 +197,7 @@ function vd.hook()
   love.wheelmoved = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _wheelmoved(...) end; vd.wheelmoved(...) end
   love.textinput = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _textinput(...) end; vd.textinput(...) end
   love.resize = function(...) _resize(...); vd.resize(...) end
+  oldprint = _print
   print = function(...) if not vd.print(...) then _print(...) end end
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
   love.quit = function(...) vd.quit(); _quit() end
@@ -273,9 +276,10 @@ do
     end
   end
 
-  function vd.print(str)
+  function vd.print(...)
     if (vd.console) then
-      vd.console.addToHistory(str, true)
+      vd.console.addToHistory(..., true)
+      oldprint(...)
       return true
     end
     return false
@@ -294,7 +298,7 @@ do
     exportStr = exportStr .. "showFunctions = " .. (vd.showFunctions and "true" or "false") .. ',\n'
     exportStr = exportStr .. "showUnderscores = " .. (vd.showUnderscores and "true" or "false") .. ',\n'
     exportStr = exportStr .. "}"
-    love.filesystem.write("vuduSettings.lua", exportStr)
+    love.filesystem.write("vudusettings.lua", exportStr)
   end
 
   function vd.origin() 

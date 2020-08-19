@@ -1,3 +1,5 @@
+this fork makes every file, folder and reference to them completely lowercase, to fix issues when zipping/distributing it. also fixes some small bugs that personally annoyed me.
+
 # vudu
 ## visual unified debug utility for LÖVE2D
 

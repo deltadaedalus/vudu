@@ -1,4 +1,4 @@
-local vdUtil = require(_vdreq .. "vuduUtil")
+local vdUtil = require(_vdreq .. "vuduutil")
 
 local vdui = {
   releaseFade = 0.2,

@@ -1,7 +1,7 @@
 local vd = require(_vdreq .. "vudu")
-local vdwin = require(_vdreq .. "vuduWindow")
-local vdui = require(_vdreq .. "vuduUI")
-local vdutil = require(_vdreq .. "vuduUtil")
+local vdwin = require(_vdreq .. "vuduwindow")
+local vdui = require(_vdreq .. "vuduui")
+local vdutil = require(_vdreq .. "vuduutil")
 
 vd.browser = vdwin.new({
   ySpace = 16,
@@ -69,23 +69,27 @@ function vd.browser.bakeTable(t, context, list, depth)
   depth = depth or 0
   
   --Associative segment of table
-  for i, v in pairs(t) do if type(i) ~= 'number' and not vd.browser.ignore[context .. i] then
+  for i, v in pairs(t) do if not vd.browser.ignore[context .. i] then
     local typ = type(v)
-    if not ( (typ == 'function' and not vd.showFunctions) or (i:sub(1,1) == '_' and not vd.showUnderscores) ) then
+    if type(i) == "number" then
+      local typ = type(v)
       table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
       if typ == 'table' and vd.browser.expand[context .. i] then
         vd.browser.bakeTable(v, context .. i, list, depth+1)
+      end
+    else
+      if not ( (typ == 'function' and not vd.showFunctions) or (i:sub(1,1) == '_' and not vd.showUnderscores) ) then
+        table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
+        if typ == 'table' and vd.browser.expand[context .. i] then
+          vd.browser.bakeTable(v, context .. i, list, depth+1)
+        end
       end
     end
   end end
   
   --Indexed segment of table
-  for i, v in ipairs(t) do
-    local typ = type(v)
-    table.insert(list, {label = i, value = v, depth = depth, ref = context .. i})
-    if typ == 'table' and vd.browser.expand[context .. i] then
-      vd.browser.bakeTable(v, context .. i, list, depth+1)
-    end
+  for i, v in pairs(t) do
+    
   end
   
   return list

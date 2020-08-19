@@ -1,6 +1,6 @@
 local vd = require(_vdreq .. "vudu")
-local vdwin = require(_vdreq .. "vuduWindow")
-local vdui = require(_vdreq .. "vuduUI")
+local vdwin = require(_vdreq .. "vuduwindow")
+local vdui = require(_vdreq .. "vuduui")
 
 vd.graphics = vdwin.new({
   afterImages = {},
