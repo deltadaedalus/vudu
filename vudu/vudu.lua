@@ -382,10 +382,19 @@ function vd._addTopWidget(self, title)
   frame:addWidget(text)
 end
 
+function vd.getFunctionType(func)
+  local typ = "nil"
+  local success = pcall(function() typ = type(func()) end)
+  return typ
+end
+
 function vd.addWatchWindow(refstr, x, y)
   x, y = x or 300 + math.random(-50, 50), y or 300 + math.random(-50, 50)
   local val = _vudu.getByName(refstr)
   local typ = type(val)
+  local funcType = typ == 'function' and _vudu.getFunctionType(val) or nil  --Check if val is a 0-input function
+  if (funcType ~= nil) then typ = funcType end  --If we're watching a 0-input function, watch the function's output
+
   local isNumber = typ == 'number'
   local isCanvas = typ == 'userdata' and string.sub(tostring(val), 1, 6) == "Canvas"
 

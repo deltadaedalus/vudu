@@ -34,7 +34,7 @@ In the top right is a small button, pressing this will open a dropdown with a fe
 
 On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.  To edit a bool, simply click it to flip its value.  Sometimes values push their way out of range of the browser, to see these values you can scroll left/right with shift+scrollwheel.
 
-By right clicking the name of a value in the browser, you can either ignore (remove from the browser) that value, or create a watch window for it.
+By right clicking the name of a value in the browser, you can either ignore (remove from the browser) that value, or create a watch window for it.  Watch Windows have some special cases; Numbers will show as a graph of their value over time, Canvases will show a small preview version, and functions with no input and non-nil output will evaluate and show their return value.
 
 On the bottom right of the screen is the **Console**, it allows you to enter lua code to be interpreted and run.  The output of this code (or any error in its compilation) is shown in the console.  The output of `print()` is also shown in the console.  You can click a bubble in the console output to copy it to your clipboard.  When typing in the console, autofill options will appear, and you can press `tab` to autofill with the lowest option on the list.
 
@@ -123,7 +123,7 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 
 This list is not exhaustive, there is more functionality which is currently internal, but will be exposed down the line.
 
-###Some Useful Bits
+### Some Useful Bits
 
 **Nothing described below is part of the official API**, but the functionality is intended to be accessible via an official API at some point.  For now, as vudu is in early stages, here are some internal things you might find useful to tap into:
 
