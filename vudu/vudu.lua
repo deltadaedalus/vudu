@@ -212,6 +212,7 @@ do
 
   function vd.draw()
     vd._oldOrigin()
+    love.graphics.setCanvas()
     for i, win in ipairs(vd.windows) do if win.runHidden or not vd.hidden then
       win:draw()
     end end
@@ -383,16 +384,29 @@ end
 
 function vd.addWatchWindow(refstr, x, y)
   x, y = x or 300 + math.random(-50, 50), y or 300 + math.random(-50, 50)
-  local typ = type(vudu.getByName(refstr))
-  local gw, gh = 96, typ == 'number' and 72 or 30
+  local val = _vudu.getByName(refstr)
+  local typ = type(val)
+  local isNumber = typ == 'number'
+  local isCanvas = typ == 'userdata' and string.sub(tostring(val), 1, 6) == "Canvas"
+
+  local gw = isCanvas and 128 
+          or 96
+  local gh = isNumber and 72 
+          or isCanvas and 16 + math.floor((gw-4) * val:getHeight()/val:getWidth())
+          or 30
   local panel = vd.vuduUI.widget.frame.new(x, y, gw, gh, 6, {idleColor = vd.colors.window})
   vd.ui:addWidgetFront(panel)
 
-  if typ == 'number' then
+  if isNumber then
     panel:addWidget(vd.vuduUI.widget.vuduGraph.new(2, 14, gw-4, gh-32, 6, refstr))
+  elseif isCanvas then
+    panel:addWidget(vd.vuduUI.widget.vuduCanvas.new(2, 14, gw-4, gh-32, 6, refstr))
   end
-  panel:addWidget(vd.vuduUI.widget.vuduField.new(2, gh-16, gw-4, 14, 6, refstr, {autoEval = true, fixedSize = true, idleColor = vudu.colors.lowLight}))
-  vudu._addTopWidget(panel, refstr)
+
+  if (not isCanvas) then
+    panel:addWidget(vd.vuduUI.widget.vuduField.new(2, gh-16, gw-4, 14, 6, refstr, {autoEval = true, fixedSize = true, idleColor = _vudu.colors.lowLight}))
+  end
+  _vudu._addTopWidget(panel, refstr)
 end
 
 function vd.setCamera(x, y, z, r)

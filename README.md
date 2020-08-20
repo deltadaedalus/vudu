@@ -60,7 +60,7 @@ function love.load()
 end
 ```
 
-You can call ```vudu.initializeDefaultHotkeys``` to enable the following set of hotkeys:
+You can call ```vudu.hotkey.InitializeDefaults``` to enable the following set of hotkeys:
 
 *lalt can be replaced with any other specific modifier key you like by passing its keycode to initializeDefaultHotkeys*
 
@@ -111,6 +111,7 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 | `vudu.hook()` | re-attaches vudu to the game, necessary if you do things like re-override love.draw or love.update |
 | `vudu.addIgnore(ignore)` | `ignore` is either a string or a table of strings which represent the names of variables not to be shown in the browser.  i.e. `vudu.addIgnore("love.graphics")` |
 | `vudu.hotkey.addSequence(keys, callback)` | `keys` is an ordered table of KeyConstant strings, `callback` is a 0-argument function |
+| `vudu.hotkey.initializeDefaults()` | Sets up the default hotkeys |
 | `vudu.physics.setWorld(world)` | Sets the physics world `world` as the world for vudu.physics to render |
 | `vudu.physics.setTransformation([x, y, z, r])` | transforms the visuals in physics module such that `x, y` is the top left corner of the screen, `z` is the zoom level, and `r` is the rotation around the top left. |
 | `vudu.graphics.setTransformation([x, y, z, r])` | see above, operates on the graphics module |
