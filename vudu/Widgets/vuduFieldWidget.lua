@@ -21,7 +21,7 @@ end
 function vdw.vuduField:update(dt)
   if self.ui.textTarget ~= self then
     local value = vd.getByName(self.refstr)
-    if self.autoEval and type(value) == "function" then value = value() end
+    if self.autoEval and type(value) == "function" then pcall(function() value = value() end) end
     self.text = tostring(value)
   end
   if not self.fixedSize then self.w = vd.font:getWrap(tostring(self.text), 500) + 12 end
