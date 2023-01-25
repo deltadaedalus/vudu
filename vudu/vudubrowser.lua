@@ -69,7 +69,8 @@ function vd.browser.bakeTable(t, context, list, depth)
   depth = depth or 0
   
   --Associative segment of table
-  for i, v in pairs(t) do if not vd.browser.ignore[context .. i] then
+  for i, v in pairs(t) do
+    if type(i)~="userdata" and not vd.browser.ignore[context..i] then -- igonre userdata to avoid crash
     local typ = type(v)
     if type(i) == "number" then
       local typ = type(v)
