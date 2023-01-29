@@ -1,6 +1,7 @@
 local vd = require(_vdreq .. "vudu")
 local vdwin = require(_vdreq .. "vuduwindow")
 local vdui = require(_vdreq .. "vuduui")
+local vdutil = require(_vdreq .. "vuduutil")
 
 vd.graphics = vdwin.new({
   afterImages = {},
@@ -64,7 +65,7 @@ function vd.graphics.afterImage:setColor()
   if self.expire == self.start then
     love.graphics.setColor(self.color)
   else
-    love.graphics.setColor(vdUtil.lerpColor((vd.timer-self.start) / (self.expire-self.start), self.color, {self.color[1], self.color[2], self.color[3], 0}))
+    love.graphics.setColor(vdutil.lerpColor((vd.timer-self.start) / (self.expire-self.start), self.color, {self.color[1], self.color[2], self.color[3], 0}))
   end
 end
 
