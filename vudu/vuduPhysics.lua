@@ -1,6 +1,7 @@
 local vd = require(_vdreq .. "vudu")
 local vdwin = require(_vdreq .. "vuduWindow")
 local vdui = require(_vdreq .. "vuduUI")
+local vdutil = require(_vdreq .. "vuduutil")
 
 vd.physics = vdwin.new({
   colors = {
@@ -138,7 +139,7 @@ vd.physics.drawJoint["friction"] = function(joint)
   local avx, avy = (vx1-vx2) / 2, (vy1-vy2) / 2
   local dir = math.atan2(avy, avx)
 
-  vdUtil.dottedLine(0, 5, 15, {a1, c1, a2, c2})
+  vdutil.dottedLine(0, 5, 15, {a1, c1, a2, c2})
   for i = 1, 3 do
     love.graphics.arc('line', 'open', x1, y1, 5 + i*3, dir-math.pi/(i+1), dir+math.pi/(i+1))
   end
@@ -159,7 +160,7 @@ vd.physics.drawJoint["gear"] = function(joint)
 
   if (ratio == 0 or ratio == math.huge) then
     love.graphics.setColor(vd.physics.colors.error)
-    vdUtil.dottedLine(0, 5, 5, {x1, y1, x2, y2})
+    vdutil.dottedLine(0, 5, 5, {x1, y1, x2, y2})
     love.graphics.setColor(vd.physics.colors.joint)
     return
   end
@@ -174,22 +175,22 @@ vd.physics.drawJoint["gear"] = function(joint)
 
     if (ratio <= -1) then
       local ox, oy = (x2-x1)/d, (y2-y1)/d
-      vdUtil.drawGear(x1, y1, (r1/2)-1.5, (r1/2)+1.5, a1, 6)
-      vdUtil.drawGear(x2, y2, (r2/2)-1.5, (r2/2)+1.5, a2, math.abs(ratio * 6))
-      vdUtil.dottedLine(a1*r1/2 + r1*math.pi/12, r1*math.pi/12, r1*math.pi/12, {x2+oy*(r2/2-1.5), y2-ox*(r2/2-1.5), x1+oy*(r1/2-1.5), y1-ox*(r1/2-1.5)})
-      vdUtil.dottedLine(a1*r1/2 + r1*math.pi/12, r1*math.pi/12, r1*math.pi/12, {x1-oy*(r1/2-1.5), y1+ox*(r1/2-1.5), x2-oy*(r2/2-1.5), y2+ox*(r2/2-1.5)})
+      vdutil.drawGear(x1, y1, (r1/2)-1.5, (r1/2)+1.5, a1, 6)
+      vdutil.drawGear(x2, y2, (r2/2)-1.5, (r2/2)+1.5, a2, math.abs(ratio * 6))
+      vdutil.dottedLine(a1*r1/2 + r1*math.pi/12, r1*math.pi/12, r1*math.pi/12, {x2+oy*(r2/2-1.5), y2-ox*(r2/2-1.5), x1+oy*(r1/2-1.5), y1-ox*(r1/2-1.5)})
+      vdutil.dottedLine(a1*r1/2 + r1*math.pi/12, r1*math.pi/12, r1*math.pi/12, {x1-oy*(r1/2-1.5), y1+ox*(r1/2-1.5), x2-oy*(r2/2-1.5), y2+ox*(r2/2-1.5)})
     elseif (ratio < 0) then
       local ox, oy = (x2-x1)/d, (y2-y1)/d
-      vdUtil.drawGear(x1, y1, (r1/2)-1.5, (r1/2)+1.5, a1, math.abs(6/ratio))
-      vdUtil.drawGear(x2, y2, (r2/2)-1.5, (r2/2)+1.5, a2, 6)
-      vdUtil.dottedLine(a2*r2/2 + r2*math.pi/12, r2*math.pi/12, r2*math.pi/12, {x2+oy*(r2/2-1.5), y2-ox*(r2/2-1.5), x1+oy*(r1/2-1.5), y1-ox*(r1/2-1.5)})
-      vdUtil.dottedLine(a2*r2/2 + r2*math.pi/12, r2*math.pi/12, r2*math.pi/12, {x1-oy*(r1/2-1.5), y1+ox*(r1/2-1.5), x2-oy*(r2/2-1.5), y2+ox*(r2/2-1.5)})
+      vdutil.drawGear(x1, y1, (r1/2)-1.5, (r1/2)+1.5, a1, math.abs(6/ratio))
+      vdutil.drawGear(x2, y2, (r2/2)-1.5, (r2/2)+1.5, a2, 6)
+      vdutil.dottedLine(a2*r2/2 + r2*math.pi/12, r2*math.pi/12, r2*math.pi/12, {x2+oy*(r2/2-1.5), y2-ox*(r2/2-1.5), x1+oy*(r1/2-1.5), y1-ox*(r1/2-1.5)})
+      vdutil.dottedLine(a2*r2/2 + r2*math.pi/12, r2*math.pi/12, r2*math.pi/12, {x1-oy*(r1/2-1.5), y1+ox*(r1/2-1.5), x2-oy*(r2/2-1.5), y2+ox*(r2/2-1.5)})
     elseif (ratio >= 1) then
-      vdUtil.drawGear(x1, y1, r1-2.5, r1+2.5, a1, 12)
-      vdUtil.drawGear(x2, y2, r2-2.5, r2+2.5, a2, ratio * 12)
+      vdutil.drawGear(x1, y1, r1-2.5, r1+2.5, a1, 12)
+      vdutil.drawGear(x2, y2, r2-2.5, r2+2.5, a2, ratio * 12)
     else
-      vdUtil.drawGear(x1, y1, r1-2.5, r1+2.5, a1, 12 / ratio)
-      vdUtil.drawGear(x2, y2, r2-2.5, r2+2.5, a2, 12)
+      vdutil.drawGear(x1, y1, r1-2.5, r1+2.5, a1, 12 / ratio)
+      vdutil.drawGear(x2, y2, r2-2.5, r2+2.5, a2, 12)
     end
   end
 end
@@ -212,7 +213,7 @@ vd.physics.drawJoint["mouse"] = function(joint)
     x1, y1
   )
 
-  vdUtil.dottedLine(0, 5, 10, {x1, y1, x2, y2})
+  vdutil.dottedLine(0, 5, 10, {x1, y1, x2, y2})
 end
 
 vd.physics.drawJoint["prismatic"] = function(joint)
@@ -280,10 +281,10 @@ vd.physics.drawJoint["pulley"] = function(joint)
 
   wheel(px1, py1, r1, -l1 / 8)
   wheel(px2, py2, r2, l2 / 8)
-  vdUtil.dottedLine(0, 6, 2, {x1, y1, gx1, gy1})
-  vdUtil.dottedLine(0, 6, 2, {x2, y2, gx2, gy2})
-  vdUtil.dottedLine(l1 * r1/8, 6, 2, {px1+gy*r1, py1-gx*r1, px2+gy*r2, py2-gx*r2})
-  if (ratio ~= 1) then vdUtil.dottedLine(l1 * r1/8, 6, 2, {px2-gy*r2, py2+gx*r2, px1-gy*r1, py1+gx*r1}) end
+  vdutil.dottedLine(0, 6, 2, {x1, y1, gx1, gy1})
+  vdutil.dottedLine(0, 6, 2, {x2, y2, gx2, gy2})
+  vdutil.dottedLine(l1 * r1/8, 6, 2, {px1+gy*r1, py1-gx*r1, px2+gy*r2, py2-gx*r2})
+  if (ratio ~= 1) then vdutil.dottedLine(l1 * r1/8, 6, 2, {px2-gy*r2, py2+gx*r2, px1-gy*r1, py1+gx*r1}) end
   
 end
 
