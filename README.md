@@ -3,7 +3,7 @@
 
 vudu is a simple to use in-game debugging system for the LÖVE2D game engine.
 
-*vudu is currently in version 0.2.1, it has only recently been released publicly.  Some amount of bugginess, unfriendliness, or instability is possible, and is being worked on.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!*
+*vudu is currently in version 0.3.0, it has only recently been released publicly.  Some amount of bugginess, unfriendliness, or instability is possible, and is being worked on.  If you have any issues or suggestions, I would greatly appreciate your feedback on the issues page!*
 
 *vudu currently supports Love2D versions 0.10.x and 0.11.x*
 
