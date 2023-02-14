@@ -18,6 +18,8 @@ vd.addWindow(require(path .. "vuduPhysics"))
 vd.addWindow(require(path .. "vuduGraphics"))
 vd.addWindow(require(path .. "vuduHotkey"))
 
+vd.errorHandler = require(path .. "errorhandler")
+
 _vdpath = nil
 _vdreq = nil
 

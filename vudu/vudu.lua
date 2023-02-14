@@ -62,6 +62,7 @@ local vd = {
   path = _vdpath,
   showSettings = false,
   camera = {x = 0, y = 0, r = 0, z = 1, transform = love.math.newTransform()},
+  erroredState = false
 }
 
 vd.colors = love._version_major >= 11 and vd.colors or vd.colors_pre11
@@ -199,6 +200,7 @@ function vd.hook()
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
   love.quit = function(...) vd.quit(); _quit() end
   love.graphics.origin = function() vd._oldOrigin(); vd.origin() end
+  love.errorhandler = vd.errorHandler
 end
 
 --Internal Callbacks and such

@@ -76,7 +76,9 @@ function vd.physics:draw()
       love.graphics.setColor(vd.physics.colors.joint)
 
       for i, j in pairs(vd.physics.allJoints) do
-        vd.physics.drawJoint[j:getType()](j)
+        if not j:isDestroyed() then
+          vd.physics.drawJoint[j:getType()](j)
+        end
       end
     end
   end
