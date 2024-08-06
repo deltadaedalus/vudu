@@ -18,5 +18,5 @@ function vdw.referenceText.new(x, y, w, h, r, settings)
 end
 
 function vdw.referenceText:update(dt)
-  self.text = tostring(vudu.getByName(self.targetRef))
+  self.text = tostring(vd.getByName(self.targetRef))
 end
