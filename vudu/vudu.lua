@@ -197,7 +197,7 @@ function vd.hook()
   love.wheelmoved = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _wheelmoved(...) end; vd.wheelmoved(...) end
   love.textinput = function(...) if not (vd.pauseType == "Stop" or vd.pauseType == "Freeze") then _textinput(...) end; vd.textinput(...) end
   love.resize = function(...) _resize(...); vd.resize(...) end
-  oldprint = _print
+  vd._oldprint = _print
   print = function(...) if not vd.print(...) then _print(...) end end
   love.window.setMode = function(w, h, ...) _setMode(w, h, ...); vd.resize(w, h) end
   love.quit = function(...) vd.quit(); _quit() end
@@ -279,7 +279,7 @@ do
   function vd.print(...)
     if (vd.console) then
       vd.console.addToHistory(..., true)
-      oldprint(...)
+      vd._oldprint(...)
       return true
     end
     return false
@@ -293,7 +293,7 @@ do
   end
 
   function vd.quit()
-    exportStr = "return {"
+    local exportStr = "return {"
     exportStr = exportStr .. "startHidden = " .. (vd.hidden and "true" or "false") .. ',\n'
     exportStr = exportStr .. "showFunctions = " .. (vd.showFunctions and "true" or "false") .. ',\n'
     exportStr = exportStr .. "showUnderscores = " .. (vd.showUnderscores and "true" or "false") .. ',\n'
@@ -386,8 +386,8 @@ function vd._addTopWidget(self, title)
 end
 
 function vd.addWatchWindow(refstr, x, y)
-  x, y = x or 300 + math.random(-50, 50), y or 300 + math.random(-50, 50)
-  local typ = type(vudu.getByName(refstr))
+  x, y = x or (300 + math.random(-50, 50)), y or (300 + math.random(-50, 50))
+  local typ = type(vd.getByName(refstr))
   local gw, gh = 96, typ == 'number' and 72 or 30
   local panel = vd.vuduUI.widget.frame.new(x, y, gw, gh, 6, {idleColor = vd.colors.window})
   vd.ui:addWidgetFront(panel)
@@ -395,8 +395,8 @@ function vd.addWatchWindow(refstr, x, y)
   if typ == 'number' then
     panel:addWidget(vd.vuduUI.widget.vuduGraph.new(2, 14, gw-4, gh-32, 6, refstr))
   end
-  panel:addWidget(vd.vuduUI.widget.vuduField.new(2, gh-16, gw-4, 14, 6, refstr, {autoEval = true, fixedSize = true, idleColor = vudu.colors.lowLight}))
-  vudu._addTopWidget(panel, refstr)
+  panel:addWidget(vd.vuduUI.widget.vuduField.new(2, gh-16, gw-4, 14, 6, refstr, {autoEval = true, fixedSize = true, idleColor = vd.colors.lowLight}))
+  vd._addTopWidget(panel, refstr)
 end
 
 function vd.setCamera(x, y, z, r)

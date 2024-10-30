@@ -50,7 +50,6 @@ vd.graphics.afterImage = {}
 vd.graphics.afterImage.__index = vd.graphics.afterImage
 
 function vd.graphics.afterImage.new(color, duration, draw)
-  settings = settings or {}
   local self = setmetatable({}, vd.graphics.afterImage)
   self.start = vd.timer
   self.expire = vd.timer + duration
