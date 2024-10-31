@@ -121,7 +121,7 @@ end
 
 --Creates the settings button
 function vd._initSettingsUI()
-  local settingsButton = vd.vuduUI.widget.new(778, 2, 20, 20, 6, {
+  local settingsButton = vd.vuduUI.widget.new(love.graphics.getWidth() - 22, 2, 20, 20, 6, {
     idleColor = vd.colors.highlight,
     onResize = function(self) self:gravR(2) end,
     onRelease = vd.toggleSettings,

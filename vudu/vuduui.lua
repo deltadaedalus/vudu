@@ -153,7 +153,7 @@ function vdui:removeWidget(w)
 end
 
 function vdui:resize(w, h)
-  self.bounds = {x = 0, y = 0, w = love.graphics.getWidth(), h = love.graphics.getHeight()}
+  self.w, self.h = w, h
   for i, w in ipairs(self.widgets) do
     if w.onResize then w:onResize() end
     w:propagateResize()
