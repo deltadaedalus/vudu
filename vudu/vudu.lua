@@ -232,7 +232,7 @@ do
   end
 
   function vd.keypressed(key, scancode, isrepeat)
-    if (key == '`') then
+    if (scancode == '`') then
       vd.hidden = not vd.hidden
     end
     if not vd.hidden then vd.ui:keypressed(key, scancode, isrepeat) end
