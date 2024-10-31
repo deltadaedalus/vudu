@@ -256,6 +256,19 @@ do
   end
 
   function vd.resize(w, h)
+    local browzerMinimizer, controlMinimizer, consoleMinimizer =
+      vd.browser.frame.widgets[1].widgets[1],
+      vd.control.frame.widgets[1].widgets[1],
+      vd.console.frame.widgets[1].widgets[1]
+    local browserMinimized, controlMinimized, consoleMinimized =
+      browzerMinimizer.savedH ~= 12,
+      controlMinimizer.savedH ~= 12,
+      consoleMinimizer.savedH ~= 12
+
+    if browserMinimized then browzerMinimizer:onRelease() end
+    if controlMinimized then controlMinimizer:onRelease() end
+    if consoleMinimized then consoleMinimizer:onRelease() end
+
     local vdw = math.min(350, math.max(math.floor(w/3), 200))
     local vdh = math.min(250, math.max(math.floor(h/4), 150))
     vd.browser.frame.w, vd.browser.frame.h = vdw, h - vdh - 6
@@ -263,6 +276,10 @@ do
     vd.console.frame.w, vd.console.frame.h, vd.console.frame.x, vd.console.frame.y = w-vdw-6, vdh, vdw+4, h-vdh-2
 
     vd.ui:resize(love.graphics.getWidth(), love.graphics.getHeight())
+
+    if browserMinimized then browzerMinimizer:onRelease() end
+    if controlMinimized then controlMinimizer:onRelease() end
+    if consoleMinimized then consoleMinimizer:onRelease() end
   end
 
   function vd.toggleSettings()
