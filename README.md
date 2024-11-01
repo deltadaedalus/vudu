@@ -20,23 +20,23 @@ function love.load()
   --Your Game Code
 end
 ```
-That's it!  Just hit the **`** key to toggle the GUI!
+That's it!  Just hit the <kbd>`</kbd> key (or whatever key comes before <kbd>1</kbd> on your non-US keyboard) to toggle the GUI!
 
 While basic setup is simple for you, it's complex for vudu, so if your game changes `love.update`, `love.draw`, `love.keypressed`, or any other love callback or lua builtin at runtime, vudu may need to be notified of this by calling `vudu.hook()`
 
 ### GUI Navigation
 
-Press **`** to show/hide the vudu GUI.
+Press <kbd>`</kbd> (or whatever key comes before <kbd>1</kbd> on your non-US keyboard) to show/hide the vudu GUI.
 
 ![alt text](https://i.imgur.com/7f220pj.png "vudu in action")
 
 In the top right is a small button, pressing this will open a dropdown with a few settings, currently these settings only filter what variables are shown in the browser
 
-On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press Enter.  To edit a bool, simply click it to flip its value.  Sometimes values push their way out of range of the browser, to see these values you can scroll left/right with shift+scrollwheel.
+On the left side of the screen is the **Browser**, it allows you to browse through all of variables in your game.  To show or hide the contents of a table, press the button to the left of its name.  To edit a string or number, click its value in the browser, type a new value, and press <kbd>Enter</kbd>.  To edit a bool, simply click it to flip its value.  Sometimes values push their way out of range of the browser, to see these values you can scroll left/right with <kbd>shift</kbd>+scrollwheel.
 
 By right clicking the name of a value in the browser, you can either ignore (remove from the browser) that value, or create a watch window for it.
 
-On the bottom right of the screen is the **Console**, it allows you to enter lua code to be interpreted and run.  The output of this code (or any error in its compilation) is shown in the console.  The output of `print()` is also shown in the console.  You can click a bubble in the console output to copy it to your clipboard.  When typing in the console, autofill options will appear, and you can press `tab` to autofill with the lowest option on the list.
+On the bottom right of the screen is the **Console**, it allows you to enter lua code to be interpreted and run.  The output of this code (or any error in its compilation) is shown in the console.  The output of `print()` is also shown in the console.  You can click a bubble in the console output to copy it to your clipboard.  When typing in the console, autofill options will appear, and you can press <kbd>Tab</kbd> to autofill with the lowest option on the list.
 
 On the bottom left of the screen is the **Controller**, the speed of execution can be adjusted with the slider, and the game can be switched between running, paused with 0dt updates, and paused without updates.  The camera can also be moved and zoomed, to get a look at things being rendered off-screen, or to zoom in on small details.
 
@@ -62,21 +62,21 @@ end
 
 You can call ```vudu.initializeDefaultHotkeys``` to enable the following set of hotkeys:
 
-*lalt can be replaced with any other specific modifier key you like by passing its keycode to initializeDefaultHotkeys*
+*<kbd>lalt</kbd> can be replaced with any other specific modifier key you like by passing its keycode to `initializeDefaultHotkeys`*
 
 | Sequence | Action |
 | -------- | ------ |
-| `lalt + space` | Toggle between 0dt Pause and Playing |
-| `lalt + p` | 0dt Pause |
-| `lalt + lshift + p` | No-Update Pause |
-| `lalt + 1` | Advance 1 Frame |
-| `lalt + ,` | Slow down the game |
-| `lalt + .` | Speed up the game |
-| `lalt + /` | Reset game speed |
-| `lalt + [Arrow Key]` | Move the Camera in the specified direction |
-| `lalt + -` | Zoom Out |
-| `lalt + =` | Zoom In |
-| `lalt + left + right` | Reset Camera |
+| <kbd>lalt</kbd> + <kbd>space</kbd> | Toggle between 0dt Pause and Playing |
+| <kbd>lalt</kbd> + <kbd>p</kbd> | 0dt Pause |
+| <kbd>lalt</kbd> + <kbd>lshift</kbd> + <kbd>p</kbd> | No-Update Pause |
+| <kbd>lalt</kbd> + <kbd>1</kbd> | Advance 1 Frame |
+| <kbd>lalt</kbd> + <kbd>,</kbd> | Slow down the game |
+| <kbd>lalt</kbd> + <kbd>.</kbd> | Speed up the game |
+| <kbd>lalt</kbd> + <kbd>/</kbd> | Reset game speed |
+| <kbd>lalt</kbd> + <kbd>[Arrow Key]</kbd> | Move the Camera in the specified direction |
+| <kbd>lalt</kbd> + <kbd>-</kbd> | Zoom Out |
+| <kbd>lalt</kbd> + <kbd>=</kbd> | Zoom In |
+| <kbd>lalt</kbd> + <kbd>left</kbd> + <kbd>right</kbd> | Reset Camera |
 
 
 ### Graphics
@@ -108,13 +108,13 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 | Function | Functionality |
 | -------- | ------------- |
 | `vudu.initialize()` | initializes vudu |
-| `vudu.hook()` | re-attaches vudu to the game, necessary if you do things like re-override love.draw or love.update |
+| `vudu.hook()` | re-attaches vudu to the game, necessary if you do things like re-override `love.draw` or `love.update` |
 | `vudu.addIgnore(ignore)` | `ignore` is either a string or a table of strings which represent the names of variables not to be shown in the browser.  i.e. `vudu.addIgnore("love.graphics")` |
 | `vudu.hotkey.addSequence(keys, callback)` | `keys` is an ordered table of KeyConstant strings, `callback` is a 0-argument function |
-| `vudu.physics.setWorld(world)` | Sets the physics world `world` as the world for vudu.physics to render |
+| `vudu.physics.setWorld(world)` | Sets the physics world `world` as the world for `vudu.physics` to render |
 | `vudu.physics.setTransformation([x, y, z, r])` | transforms the visuals in physics module such that `x, y` is the top left corner of the screen, `z` is the zoom level, and `r` is the rotation around the top left. |
 | `vudu.graphics.setTransformation([x, y, z, r])` | see above, operates on the graphics module |
-| `vudu.graphics.drawPoint(color, duration, x, y, [w])` | draws a point at `x, y` with radius `w`.  All vudu.graphics.draw_ operations are drawn with `color`, and remain on screen for `duration` |
+| `vudu.graphics.drawPoint(color, duration, x, y, [w])` | draws a point at `x, y` with radius `w`.  All `vudu.graphics.draw_` operations are drawn with `color`, and remain on screen for `duration` |
 | `vudu.graphics.drawLine(color, duration, sx, sy, ex, ey, [w])` | draws a line from `sx, sy` to `ex, ey` with width `w` |
 | `vudu.graphics.drawCircle(color, duration, x, y, r, [w])` | draws a circle with radius `r` around the point `x, y`, with edge width `w` |
 | `vudu.graphics.drawText(color, duration, x, y, text)` | prints `text` at position `x, y`|
@@ -122,7 +122,7 @@ The `vudu.physics` module renders the given physics world in wireframe, includin
 
 This list is not exhaustive, there is more functionality which is currently internal, but will be exposed down the line.
 
-###Some Useful Bits
+### Some Useful Bits
 
 **Nothing described below is part of the official API**, but the functionality is intended to be accessible via an official API at some point.  For now, as vudu is in early stages, here are some internal things you might find useful to tap into:
 
